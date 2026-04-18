@@ -5,116 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bíblia Sagrada - Palavra que Fortifica</title>
     <style>
-        /* Estética de Bíblia Impressa - Foco na 3ª Idade */
-        body {
-            background-color: #fcf9f2; /* Cor de papel creme suave */
-            color: #333;
-            font-family: 'Georgia', serif; /* Fonte de livro */
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        body { background-color: #fcf9f2; color: #333; font-family: 'Georgia', serif; margin: 0; padding: 0; line-height: 1.6; }
+        header { padding: 20px; text-align: center; background-color: #fff; border-bottom: 2px solid #e8e2d0; }
+        h1 { margin: 0; font-size: 28px; color: #5d4037; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; }
+        
+        /* Botões grandes para o índice */
+        .btn-livro { 
+            display: block; background-color: #5d4037; color: white; 
+            padding: 20px; margin: 10px 0; border-radius: 12px; 
+            text-decoration: none; font-size: 22px; font-weight: bold; 
+            cursor: pointer; border: none; width: 100%;
         }
 
-        header {
-            padding: 40px 20px;
-            text-align: center;
-            background-color: #fff;
-            border-bottom: 2px solid #e8e2d0;
-        }
+        /* Estilo do Texto da Bíblia */
+        .leitura { text-align: left; font-size: 24px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: none; }
+        .versiculo { margin-bottom: 15px; display: block; }
+        .numero-v { font-size: 14px; color: #999; margin-right: 10px; vertical-align: top; }
 
-        h1 { 
-            margin: 0; 
-            font-size: 32px; 
-            color: #5d4037; 
-            letter-spacing: 1px;
-        }
-
-        .container {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .instrucao {
-            font-size: 20px;
-            margin: 20px 0 40px 0;
-            color: #555;
-            font-style: italic;
-        }
-
-        /* Botões grandes para facilitar o toque */
-        .btn-testamento {
-            display: block;
-            background-color: #5d4037;
-            color: white;
-            padding: 30px 20px;
-            margin: 20px 0;
-            border-radius: 15px;
-            text-decoration: none;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-
-        .btn-testamento:active {
-            transform: scale(0.98);
-        }
-
-        .btn-whatsapp {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #25d366;
-            color: white;
-            padding: 18px 30px;
-            margin-top: 50px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        /* Barra de Propaganda (Fixa no fundo) */
-        .propaganda {
-            background-color: #f0f0f0;
-            padding: 15px;
-            text-align: center;
-            border-top: 1px solid #ddd;
-            position: sticky;
-            bottom: 0;
-            width: 100%;
-        }
+        .btn-voltar { background: #8d6e63; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-bottom: 20px; cursor: pointer; display: none; }
+        
+        .propaganda { background-color: #f0f0f0; padding: 15px; text-align: center; border-top: 1px solid #ddd; position: sticky; bottom: 0; width: 100%; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Bíblia Sagrada</h1>
-    <p style="color: #8d6e63; font-weight: bold;">Palavra que Fortifica</p>
+    <p>Palavra que Fortifica</p>
 </header>
 
 <div class="container">
-    <p class="instrucao">Toque no que deseja ler hoje:</p>
+    <button id="btnVoltar" class="btn-voltar" onclick="voltar()">⬅ Voltar aos Livros</button>
     
-    <a href="#" class="btn-testamento">ANTIGO TESTAMENTO</a>
-    <a href="#" class="btn-testamento">NOVO TESTAMENTO</a>
+    <div id="indice">
+        <p style="font-size: 20px;">Toque no livro para ler:</p>
+        <div id="listaLivros"></div>
+    </div>
 
-    <a href="https://api.whatsapp.com/send?text=Olá! Encontrei este site maravilhoso para ler a Bíblia de forma simples: https://biblia-sagrada.github.io" class="btn-whatsapp" target="_blank">
-        Compartilhar no WhatsApp
-    </a>
+    <div id="leitura" class="leitura">
+        <h2 id="tituloLivro"></h2>
+        <div id="textoBiblico"></div>
+    </div>
 </div>
 
 <div class="propaganda">
-    <small style="color: #999; display: block; margin-bottom: 5px;">Publicidade</small>
-    <div style="height: 60px; background: #e8e8e8; display: flex; align-items: center; justify-content: center; border: 1px dashed #bbb; color: #777;">
-        Espaço para o seu anúncio (Barra inferior)
+    <small>Publicidade</small>
+    <div style="height: 50px; background: #e8e8e8; display: flex; align-items: center; justify-content: center; color: #777;">
+        Seu Anúncio Aqui
     </div>
 </div>
+
+<script>
+    let dadosBiblia = [];
+
+    // Busca o arquivo JSON que você criou
+    fetch('biblia.json')
+        .then(response => response.json())
+        .then(data => {
+            dadosBiblia = data;
+            exibirIndice();
+        });
+
+    function exibirIndice() {
+        const lista = document.getElementById('listaLivros');
+        lista.innerHTML = '';
+        dadosBiblia.forEach((livro, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-livro';
+            btn.innerText = livro.name;
+            btn.onclick = () => lerLivro(index);
+            lista.appendChild(btn);
+        });
+    }
+
+    function lerLivro(index) {
+        document.getElementById('indice').style.display = 'none';
+        document.getElementById('leitura').style.display = 'block';
+        document.getElementById('btnVoltar').style.display = 'inline-block';
+        
+        const livro = dadosBiblia[index];
+        document.getElementById('tituloLivro').innerText = livro.name;
+        
+        let conteudoHtml = '';
+        // Pegamos o primeiro capítulo da nossa amostra
+        livro.chapters[0].forEach((versiculo, i) => {
+            conteudoHtml += `<span class="versiculo"><span class="numero-v">${i + 1}</span>${versiculo}</span>`;
+        });
+        
+        document.getElementById('textoBiblico').innerHTML = conteudoHtml;
+        window.scrollTo(0,0);
+    }
+
+    function voltar() {
+        document.getElementById('indice').style.display = 'block';
+        document.getElementById('leitura').style.display = 'none';
+        document.getElementById('btnVoltar').style.display = 'none';
+    }
+</script>
 
 </body>
 </html>
