@@ -114,6 +114,21 @@ function renderizarMenu() {
     filtrarTestamento('todos');
 }
 
+function compartilharWhatsApp() {
+    const titulo = document.getElementById('nomeLivro').innerText;
+    const textoBiblia = document.getElementById('texto').innerText;
+    const urlApp = window.location.href;
+
+    // Monta a mensagem: Título + Texto + Link do App
+    const mensagem = `📖 *${titulo}*\n\n${textoBiblia}\n\nLido em: ${urlApp}`;
+    
+    // Codifica para URL
+    const linkZap = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+    
+    // Abre o WhatsApp
+    window.open(linkZap, '_blank');
+}
+
 // --- LÓGICA DE OFERTAS (CSV) ---
 
 function parseCsvLine(line) {
