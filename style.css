@@ -11,21 +11,49 @@ header {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    padding: 0 15px; 
+    padding: 0 10px; 
     background: #fff; 
-    border-bottom: 1px solid #e0d9c1;
-    position: sticky; 
-    top: 0; 
-    z-index: 100; 
-    height: 60px;
-    box-sizing: border-box; /* Garante que o padding não aumente a altura */
+    border-bottom: 2px solid #e0d9c1;
+    position: sticky; top: 0; z-index: 100; height: 70px;
 }
 
-.logo-area { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; /* Espaço entre a logo e o texto */
-    flex-grow: 1;
+.header-left { display: flex; align-items: center; gap: 8px; }
+
+.logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+
+.title-biblia { 
+    font-size: 1.1rem; 
+    font-weight: 800; 
+    color: #5d4037; 
+    text-transform: uppercase;
+}
+
+.subtitle-biblia { 
+    font-size: 0.65rem; 
+    color: #a1887f; 
+    font-weight: 600;
+}
+
+/* Navegação no Cabeçalho */
+.header-nav { display: flex; gap: 6px; }
+
+.btn-testamento {
+    background: #5d4037;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.btn-testamento:active { background: #3e2723; }
+
+/* Ajuste do Container para não bater no cabeçalho mais alto */
+.container { 
+    max-width: 700px; margin: 0 auto; padding: 15px 15px 140px 15px; 
 }
 
 .logo-img { 
