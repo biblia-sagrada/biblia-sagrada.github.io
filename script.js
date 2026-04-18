@@ -47,8 +47,8 @@ function abrirLivro(i) {
     let html = '';
     if (livro.chapters && livro.chapters[0]) {
         livro.chapters[0].forEach((v, idx) => {
-            // AQUI: Envolvendo o texto na classe .versiculo
-            html += `<div class="versiculo"><span class="num-v">${idx + 1}</span>${v}</div>`;
+            // Usamos span para o texto ser contínuo
+            html += `<span class="versiculo"><span class="num-v">${idx + 1}</span>${v} </span>`;
         });
     }
     document.getElementById('texto').innerHTML = html;
