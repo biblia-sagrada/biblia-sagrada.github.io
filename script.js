@@ -1,151 +1,105 @@
-// Configurações e Variáveis Globais
 let livros = [];
 let offersData = [];
 const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
 
-// --- LÓGICA DA BÍBLIA ---
-
-// Carregar o JSON da Bíblia (Agora apontando para a raiz)
-fetch('./biblia.json') 
-    .then(res => {
-        if (!res.ok) throw new Error('Erro ao carregar biblia.json');
-        return res.json();
-    })
+// Carregar Bíblia da Raiz
+fetch('./biblia.json')
+    .then(res => res.json())
     .then(data => {
         livros = data;
         renderizarMenu();
-    })
-    .catch(err => {
-        console.error("Erro:", err);
-        document.getElementById('listaLivros').innerHTML = '<p class="text-center col-span-full text-red-500">Erro ao carregar os livros. Verifique se o arquivo biblia.json está na raiz.</p>';
-    });
+    }).catch(err => console.error("Erro ao carregar biblia.json", err));
 
-// Renderiza a lista de botões dos livros
 function renderizarMenu() {
     const grade = document.getElementById('listaLivros');
     if (!grade) return;
     grade.innerHTML = '';
-
     livros.forEach((l, i) => {
         const b = document.createElement('button');
-        // AQUI: Garantindo que a classe do CSS seja aplicada
-        b.className = 'btn-livro'; 
+        b.className = 'btn-livro';
         b.innerText = l.name;
         b.onclick = () => abrirLivro(i);
         grade.appendChild(b);
     });
 }
 
-// Abre o conteúdo do livro selecionado
 function abrirLivro(i) {
     document.getElementById('menu').style.display = 'none';
     document.getElementById('telaLeitura').style.display = 'block';
-    
     const livro = livros[i];
     document.getElementById('nomeLivro').innerText = livro.name;
     
     let html = '';
     if (livro.chapters && livro.chapters[0]) {
         livro.chapters[0].forEach((v, idx) => {
-            // Usamos span para o texto ser contínuo
-            html += `<span class="versiculo"><span class="num-v">${idx + 1}</span>${v} </span>`;
+            html += `<span class="versiculo"><span class="num-v">${idx + 1}</span>${v}</span> `;
         });
     }
     document.getElementById('texto').innerHTML = html;
     window.scrollTo(0, 0);
 }
 
-// Volta para a tela principal
 function irParaMenu() {
     document.getElementById('menu').style.display = 'block';
     document.getElementById('telaLeitura').style.display = 'none';
 }
 
-// --- LÓGICA DE PUBLICIDADE (CSV) ---
-
-// Função para tratar o CSV respeitando aspas e vírgulas
+// Lógica de Ofertas
 function parseCsvLine(line) {
     const result = [];
     let inQuote = false;
     let currentField = '';
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
-        if (char === '"') {
-            inQuote = !inQuote;
-        } else if (char === ',' && !inQuote) {
+        if (char === '"') inQuote = !inQuote;
+        else if (char === ',' && !inQuote) {
             result.push(currentField.trim());
             currentField = '';
-        } else {
-            currentField += char;
-        }
+        } else currentField += char;
     }
     result.push(currentField.trim());
     return result;
 }
 
-// Busca as ofertas na planilha do Google
 async function fetchOffers() {
     try {
         const response = await fetch(OFFERS_CSV_URL);
         const csvText = await response.text();
-        const lines = csvText.split('\n').filter(line => line.trim() !== '');
-        
-        if (lines.length <= 1) return;
-
+        const lines = csvText.split('\n').filter(l => l.trim() !== '');
         const headers = parseCsvLine(lines[0]);
         
         offersData = lines.slice(1).map(line => {
             const values = parseCsvLine(line);
             const row = {};
-            headers.forEach((header, index) => {
-                // Limpa aspas extras e quebras de linha
-                let val = values[index] ? values[index].replace(/^"|"$/g, '').replace(/\r$/, '') : '';
-                row[header.trim()] = val;
+            headers.forEach((h, idx) => {
+                row[h.trim()] = values[idx] ? values[idx].replace(/^"|"$/g, '').replace(/\r$/, '') : '';
             });
             return row;
-        }).filter(o => o.img && o.img.length > 5);
+        }).filter(o => o.img && o.img.length > 10);
 
         if (offersData.length > 0) {
             updateOffer();
-            setInterval(updateOffer, 10000); // Troca a cada 10 segundos
+            setInterval(updateOffer, 10000);
         }
-    } catch (error) {
-        console.error("Erro ao carregar anúncios:", error);
-    }
+    } catch (e) { console.error(e); }
 }
 
-// Atualiza o banner de oferta no rodapé
 function updateOffer() {
-    if (offersData.length === 0) return;
-    
     const ad = offersData[Math.floor(Math.random() * offersData.length)];
-    const linkElem = document.getElementById('content-link');
-    const loadingElem = document.getElementById('loading-ads');
-
-    if (loadingElem) loadingElem.classList.add('hidden');
-    if (linkElem) {
-        linkElem.classList.remove('hidden');
-        document.getElementById('content-title').textContent = ad['Item_Name'] || "Destaque";
-        document.getElementById('content-image').src = ad['img'] || "";
-        document.getElementById('offer-description').textContent = ad['Description'] || "";
-        linkElem.href = ad['Offer_Link'] || "#";
-    }
+    const link = document.getElementById('content-link');
+    document.getElementById('loading-ads').classList.add('hidden');
+    link.classList.remove('hidden');
+    document.getElementById('content-title').textContent = ad['Item_Name'] || "";
+    document.getElementById('content-image').src = ad['img'] || "";
+    document.getElementById('offer-description').textContent = ad['Description'] || "";
+    link.href = ad['Offer_Link'] || "#";
 }
 
-// Configura o botão de recolher/expandir o rodapé
-function setupCollapse() {
-    const btn = document.getElementById('collapse-button');
-    const area = document.getElementById('content-area');
-    if (btn && area) {
-        btn.onclick = () => {
-            area.classList.toggle('collapsed');
-            btn.innerText = area.classList.contains('collapsed') ? '▲' : '▼';
-        };
-    }
-}
-
-// Inicializa tudo quando a página carregar
 window.onload = () => {
     fetchOffers();
-    setupCollapse();
+    document.getElementById('collapse-button').onclick = () => {
+        const area = document.getElementById('content-area');
+        area.classList.toggle('collapsed');
+        document.getElementById('collapse-button').innerText = area.classList.contains('collapsed') ? '▲' : '▼';
+    };
 };
