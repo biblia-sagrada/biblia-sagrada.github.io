@@ -18,7 +18,14 @@ fetch('js/biblia.json')
 function renderizarMenu() {
     const grade = document.getElementById('listaLivros');
     if (!grade) return;
-    grade.innerHTML = '';
+    
+    grade.innerHTML = ''; // Limpa a grade antes de preencher
+    
+    if (livros.length === 0) {
+        grade.innerHTML = '<p class="text-center col-span-full">Carregando livros...</p>';
+        return;
+    }
+
     livros.forEach((l, i) => {
         const b = document.createElement('button');
         b.className = 'btn-livro';
