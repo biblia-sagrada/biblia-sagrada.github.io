@@ -26,6 +26,41 @@ function renderizarMenu() {
     });
 }
 
+// Lista de livros do Novo Testamento para o filtro automático
+const livrosNovoTestamento = [
+    "Mateus", "Marcos", "Lucas", "João", "Atos", "Romanos", "1 Coríntios", 
+    "2 Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", 
+    "1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "2 Timóteo", 
+    "Tito", "Filemom", "Hebreus", "Tiago", "1 Pedro", "2 Pedro", 
+    "1 João", "2 João", "3 João", "Judas", "Apocalipse"
+];
+
+function filtrarTestamento(tipo) {
+    const grade = document.getElementById('listaLivros');
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('telaLeitura').style.display = 'none';
+    
+    grade.innerHTML = '';
+    
+    livros.forEach((l, i) => {
+        const isNovo = livrosNovoTestamento.includes(l.name);
+        
+        if ((tipo === 'novo' && isNovo) || (tipo === 'velho' && !isNovo)) {
+            const b = document.createElement('button');
+            b.className = 'btn-livro';
+            b.innerText = l.name;
+            b.onclick = () => abrirSeletorCapitulos(i);
+            grade.appendChild(b);
+        }
+    });
+    window.scrollTo(0, 0);
+}
+
+// Altere a função irParaMenu para que ela volte ao índice completo ou ao último filtro
+function irParaMenu() {
+    renderizarMenu(); // Mostra todos os livros novamente
+}
+
 // 1ª Etapa: Abre a grade de capítulos do livro escolhido
 function abrirSeletorCapitulos(livroIdx) {
     const livro = livros[livroIdx];
