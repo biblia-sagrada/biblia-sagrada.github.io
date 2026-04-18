@@ -60,27 +60,32 @@ header h1 {
 
 /* Área de Leitura */
 .leitura { display: none; }
+/* Container do texto */
 #texto { 
     font-family: 'Lora', serif; 
-    font-size: 20px; 
-    line-height: 1.8; 
+    font-size: 19px; /* Ajuste leve para melhor leitura em parágrafos */
+    line-height: 1.6; 
     text-align: left; 
     color: #3e2723;
-    display: block; /* O container é um bloco */
+    padding: 10px 0;
 }
 
+/* Cada versículo como um parágrafo distinto */
 .versiculo { 
-    display: inline; /* FORÇA o texto a ser contínuo */
-    margin-right: 4px; 
+    display: block; /* FORÇA a quebra de linha */
+    margin-bottom: 16px; /* Espaço entre um versículo e outro */
+    padding-bottom: 4px;
 }
 
+/* Número do versículo */
 .num-v { 
+    font-family: 'Inter', sans-serif;
     font-size: 0.6em; 
     font-weight: 800; 
     color: #a1887f; 
-    vertical-align: super; 
-    margin-right: 2px;
-    line-height: 0;
+    margin-right: 8px; /* Espaço entre o número e o início do texto */
+    display: inline-block;
+    min-width: 20px; /* Alinha os textos caso o número cresça */
 }
 
 .btn-acao { 
