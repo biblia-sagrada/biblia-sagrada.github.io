@@ -74,24 +74,27 @@ header h1 { font-size: 1.1rem; margin: 0; color: #5d4037; font-family: 'Inter', 
     border: 1px solid #eee; 
 }
 
-/* Título em 1 linha (truncate) */
+/* Título ajustado para aceitar até 2 linhas se necessário */
 #content-title {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: bold;
     color: #4338ca;
-    white-space: nowrap;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Permite até 2 linhas para o título */
+    -webkit-box-orient: vertical;  
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 2px;
 }
 
-/* Descrição em até 3 linhas com reticências (...) */
+/* Descrição ajustada para 2 linhas (para sobrar espaço para o título) */
 #offer-description {
     font-size: 0.75rem;
     color: #4b5563;
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* Limita a 3 linhas */
+    -webkit-line-clamp: 2; /* Reduzi para 2 para o layout respirar no celular */
     -webkit-box-orient: vertical;  
     overflow: hidden;
-    line-height: 1.2;
+    line-height: 1.3;
 }
