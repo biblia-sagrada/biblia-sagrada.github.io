@@ -3,43 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Sagrada</title>
+    <title>Bíblia Sagrada - Palavra que Fortifica</title>
     <link rel="icon" type="image/jpeg" href="logo150.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-        body { background-color: #f7f3e9; color: #2c2c2c; font-family: 'Georgia', serif; margin: 0; padding: 0; }
         
-        /* Header Compacto com Logo */
+        body { 
+            background-color: #f7f3e9; 
+            color: #2c2c2c; 
+            font-family: 'Georgia', serif; 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden;
+        }
+
+        /* Header Compacto */
         header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 5px 15px; background: #fff; border-bottom: 1px solid #e0d9c1;
-            position: sticky; top: 0; z-index: 100; height: 50px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 5px 15px; 
+            background: #fff; 
+            border-bottom: 1px solid #e0d9c1;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 55px;
         }
         .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-img { height: 35px; width: 35px; border-radius: 5px; object-fit: cover; }
-        header h1 { font-size: 1rem; margin: 0; color: #5d4037; font-family: 'Inter', sans-serif; font-weight: 700; }
+        .logo-img { height: 38px; width: 38px; border-radius: 6px; object-fit: cover; }
+        header h1 { font-size: 1.1rem; margin: 0; color: #5d4037; font-family: 'Inter', sans-serif; font-weight: 700; }
 
-        .container { max-width: 700px; margin: 0 auto; padding: 15px; padding-bottom: 110px; }
+        .container { max-width: 700px; margin: 0 auto; padding: 15px; padding-bottom: 120px; }
+
+        /* Grade de Livros */
         .lista-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
         .btn-livro { 
-            background: #fff; border: 1px solid #d3cebd; padding: 12px 5px; 
-            border-radius: 8px; font-size: 16px; font-weight: bold; color: #5d4037;
-            box-shadow: 0 2px 0 #d3cebd;
+            background: #fff; border: 1px solid #d3cebd; padding: 15px 5px; 
+            border-radius: 8px; font-size: 17px; font-weight: bold; color: #5d4037;
+            cursor: pointer; box-shadow: 0 2px 0 #d3cebd; transition: all 0.2s;
         }
+        .btn-livro:active { transform: translateY(2px); box-shadow: none; }
 
+        /* Texto da Bíblia */
         .leitura { display: none; font-size: 22px; line-height: 1.8; text-align: justify; }
-        .num-v { font-size: 0.6em; font-weight: bold; color: #a1887f; margin-right: 4px; vertical-align: super; }
-        .btn-acao { background: #5d4037; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; }
+        .num-v { font-size: 0.6em; font-weight: bold; color: #a1887f; margin-right: 6px; vertical-align: super; }
+        .btn-acao { background: #5d4037; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
 
-        /* Rodapé de anúncios aprimorado */
+        /* Carrossel de Publicidade (Estilo do outro site) */
         #content-area {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: #fff; border-top: 2px solid #5147e6;
-            z-index: 1000; height: 90px; transition: all 0.3s;
+            background: #ffffff; border-top: 2px solid #5147e6;
+            z-index: 1000; height: 100px; transition: all 0.3s ease-in-out;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
-        #content-area.collapsed { height: 30px; }
-        .content-wrapper { display: flex; align-items: center; gap: 12px; padding: 10px; text-decoration: none; }
+        #content-area.collapsed { height: 35px; }
+        .content-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: inherit; }
+        .content-image { width: 75px; height: 75px; object-cover: cover; border-radius: 8px; flex-shrink: 0; border: 1px solid #eee; }
+        
+        .loading-state { text-align: center; color: #999; font-size: 12px; padding: 10px; }
     </style>
 </head>
 <body>
@@ -49,29 +72,32 @@
         <img src="logo150.jpg" alt="Logo" class="logo-img">
         <h1>Bíblia Sagrada</h1>
     </div>
-    <span class="text-[10px] uppercase text-amber-800 font-bold">Palavra que Fortifica</span>
+    <span class="text-[10px] uppercase text-amber-800 font-bold tracking-tight text-right leading-none">Palavra que<br>Fortifica</span>
 </header>
 
 <div class="container">
     <div id="menu">
+        <p style="text-align:center; color:#8d6e63; font-weight: bold; margin-bottom: 15px;">Selecione um livro:</p>
         <div class="lista-grid" id="listaLivros"></div>
     </div>
 
     <div id="telaLeitura" class="leitura">
-        <button class="btn-acao" onclick="irParaMenu()">⬅ Livros</button>
-        <h2 id="nomeLivro" class="text-center font-bold text-amber-900 mb-4"></h2>
+        <button class="btn-acao" onclick="irParaMenu()">⬅ Voltar aos Livros</button>
+        <h2 id="nomeLivro" style="text-align:center; color:#5d4037; font-size: 28px; margin-bottom: 20px; border-bottom: 2px solid #e0d9c1; padding-bottom: 10px;"></h2>
         <div id="texto"></div>
     </div>
 </div>
 
 <div id="content-area">
-    <button id="collapse-button" class="absolute -top-3 right-4 bg-amber-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-[10px] shadow-md">▼</button>
-    <div id="loading-ads" class="text-center py-2 text-xs text-gray-400">Buscando mensagens...</div>
+    <button id="collapse-button" class="absolute -top-3 right-4 bg-[#5147e6] text-white rounded-full w-7 h-7 flex items-center justify-center text-[12px] shadow-lg z-50">▼</button>
+    
+    <div id="loading-ads" class="loading-state">Carregando ofertas inspiradoras...</div>
+    
     <a id="content-link" href="#" target="_blank" class="content-wrapper hidden">
-        <img id="content-image" class="w-16 h-16 rounded-lg shadow-sm border" src="" alt="">
+        <img id="content-image" class="content-image" src="" alt="Produto">
         <div class="flex-grow min-w-0">
-            <h3 id="content-title" class="text-sm font-bold text-indigo-700 truncate"></h3>
-            <p id="offer-description" class="text-xs text-gray-600 line-clamp-2"></p>
+            <h3 id="content-title" class="text-sm font-bold text-indigo-700 truncate mb-1"></h3>
+            <p id="offer-description" class="text-xs text-gray-600 line-clamp-2 leading-snug"></p>
         </div>
     </a>
 </div>
@@ -81,13 +107,13 @@
     let offersData = [];
     const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
 
-    // Carregar Bíblia
+    // --- 1. LÓGICA DA BÍBLIA ---
     fetch('js/biblia.json')
         .then(res => res.json())
         .then(data => {
             livros = data;
             renderizarMenu();
-        }).catch(e => console.error("Erro ao ler biblia.json. Verifique se o arquivo está na pasta js/"));
+        }).catch(err => console.error("Erro ao carregar biblia.json:", err));
 
     function renderizarMenu() {
         const grade = document.getElementById('listaLivros');
@@ -106,10 +132,14 @@
         document.getElementById('telaLeitura').style.display = 'block';
         const livro = livros[i];
         document.getElementById('nomeLivro').innerText = livro.name;
+        
+        // Renderiza o primeiro capítulo por padrão
         let html = '';
-        livro.chapters[0].forEach((v, idx) => {
-            html += `<span class="versiculo"><span class="num-v">${idx+1}</span>${v} </span>`;
-        });
+        if(livro.chapters && livro.chapters[0]) {
+            livro.chapters[0].forEach((v, idx) => {
+                html += `<span class="versiculo"><span class="num-v">${idx+1}</span>${v} </span>`;
+            });
+        }
         document.getElementById('texto').innerHTML = html;
         window.scrollTo(0,0);
     }
@@ -119,51 +149,87 @@
         document.getElementById('telaLeitura').style.display = 'none';
     }
 
-    // Lógica de Publicidade Robusta (Trata vírgulas no CSV)
+    // --- 2. LÓGICA DE PUBLICIDADE (O OMNI-PROTOCOL) ---
+    
+    // Função idêntica ao seu site que funciona
+    function parseCsvLine(line) {
+        const result = [];
+        let inQuote = false;
+        let currentField = '';
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+                inQuote = !inQuote;
+            } else if (char === ',' && !inQuote) {
+                result.push(currentField.trim());
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+        result.push(currentField.trim());
+        return result;
+    }
+
     async function fetchOffers() {
         try {
             const response = await fetch(OFFERS_CSV_URL);
             const csvText = await response.text();
-            // Função simples para separar CSV respeitando aspas
-            const rows = csvText.split('\n').slice(1);
-            offersData = rows.map(row => {
-                const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                if (cols && cols.length >= 3) {
-                    return {
-                        title: cols[0].replace(/"/g, ''),
-                        link: cols[1].replace(/"/g, ''),
-                        img: cols[2].replace(/"/g, ''),
-                        desc: cols[3] ? cols[3].replace(/"/g, '') : ""
-                    };
-                }
-                return null;
-            }).filter(o => o && o.img);
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
             
+            if (lines.length <= 1) return;
+
+            const headers = parseCsvLine(lines[0]);
+            
+            offersData = lines.slice(1).map(line => {
+                const values = parseCsvLine(line);
+                const row = {};
+                headers.forEach((header, index) => {
+                    // Remove possíveis aspas e caracteres de quebra de linha
+                    let val = values[index] ? values[index].replace(/^"|"$/g, '').replace(/\r$/, '') : '';
+                    row[header.trim()] = val;
+                });
+                return row;
+            }).filter(o => o.img && o.img.length > 5); // Filtra linhas vazias
+
             if (offersData.length > 0) {
-                rotateOffers();
-                setInterval(rotateOffers, 10000);
+                updateOffer();
+                setInterval(updateOffer, 10000); // Rotaciona a cada 10 segundos
             }
-        } catch (e) { console.error("Erro ao carregar anúncios", e); }
+        } catch (error) {
+            console.error("Erro ao carregar anúncios:", error);
+        }
     }
 
-    function rotateOffers() {
+    function updateOffer() {
+        if (offersData.length === 0) return;
+        
         const ad = offersData[Math.floor(Math.random() * offersData.length)];
-        const link = document.getElementById('content-link');
-        document.getElementById('loading-ads').classList.add('hidden');
-        link.classList.remove('hidden');
-        document.getElementById('content-title').innerText = ad.title;
-        document.getElementById('content-image').src = ad.img;
-        link.href = ad.link;
-        document.getElementById('offer-description').innerText = ad.desc;
+        const linkElem = document.getElementById('content-link');
+        const loadingElem = document.getElementById('loading-ads');
+
+        loadingElem.classList.add('hidden');
+        linkElem.classList.remove('hidden');
+
+        // Mapeia os campos da sua planilha
+        document.getElementById('content-title').textContent = ad['Item_Name'] || "Destaque do Dia";
+        document.getElementById('content-image').src = ad['img'] || "";
+        document.getElementById('offer-description').textContent = ad['Description'] || "";
+        linkElem.href = ad['Offer_Link'] || "#";
     }
 
-    document.getElementById('collapse-button').onclick = (e) => {
+    // Controle do Botão Recolher
+    document.getElementById('collapse-button').onclick = () => {
         const area = document.getElementById('content-area');
+        const btn = document.getElementById('collapse-button');
         area.classList.toggle('collapsed');
-        e.target.innerText = area.classList.contains('collapsed') ? '▲' : '▼';
+        btn.innerText = area.classList.contains('collapsed') ? '▲' : '▼';
     };
 
-    fetchOffers();
+    // Iniciar tudo ao carregar a página
+    window.onload = () => {
+        fetchOffers();
+    };
 </script>
 
 </body>
