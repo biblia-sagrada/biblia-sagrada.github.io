@@ -31,6 +31,7 @@ function abrirLivro(i) {
     
     let html = '';
     if (livro.chapters && livro.chapters[0]) {
+        // Montamos uma sequência de spans sem quebras de linha entre eles
         livro.chapters[0].forEach((v, idx) => {
             html += `<span class="versiculo"><span class="num-v">${idx + 1}</span>${v}</span> `;
         });
