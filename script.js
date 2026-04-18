@@ -81,8 +81,6 @@ function abrirSeletorCapitulos(livroIdx) {
 
     if (livro.chapters.length === 1) {
         carregarCapitulo(livroIdx, 0);
-    } else {
-        areaTexto.innerHTML = `<p class="text-center text-gray-500 mt-6 font-bold">Toque no número do capítulo:</p>`;
     }
     window.scrollTo(0, 0);
 }
