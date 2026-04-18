@@ -20,8 +20,8 @@
     </div>
 
     <div class="header-nav">
-        <button class="btn-testamento" onclick="filtrarTestamento('velho')">Velho</button>
-        <button class="btn-testamento" onclick="filtrarTestamento('novo')">Novo</button>
+        <button class="btn-testamento" onclick="filtrarTestamento('velho')">Velho Testamento</button>
+        <button class="btn-testamento" onclick="filtrarTestamento('novo')">Novo Testamento</button>
     </div>
 </header>
 
@@ -31,10 +31,9 @@
     </section>
 
     <section id="telaLeitura" class="leitura">
-        <button class="btn-acao" onclick="irParaMenu()">📖 Índice</button>
         <h2 id="nomeLivro" class="text-center text-[#5d4037] text-3xl mb-6 font-serif"></h2>
         
-        <div id="seletorCapitulos" class="flex flex-wrap gap-2 mb-6 justify-center"></div>
+        <div id="seletorCapitulos" class="lista-grid mb-6"></div>
         
         <article id="texto"></article>
     </section>
@@ -42,7 +41,7 @@
 
 <aside id="content-area">
     <button id="collapse-button" class="absolute -top-3 right-4 bg-[#5147e6] text-white rounded-full w-7 h-7 flex items-center justify-center text-[12px] shadow-lg">▼</button>
-    <div id="loading-ads" class="loading-state">Buscando mensagens...</div>
+    <div id="loading-ads" class="loading-state">Carregando ofertas incríveis...</div>
     <a id="content-link" href="#" target="_blank" class="content-wrapper hidden">
         <img id="content-image" class="content-image" src="" alt="">
         <div class="min-w-0">
