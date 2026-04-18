@@ -29,15 +29,40 @@ function abrirLivro(i) {
     const livro = livros[i];
     document.getElementById('nomeLivro').innerText = livro.name;
     
-    let html = '';
-    if (livro.chapters && livro.chapters[0]) {
-        livro.chapters[0].forEach((v, idx) => {
-            // Mudamos para 'p' (parágrafo) para garantir a quebra de linha
-            html += `<p class="versiculo"><span class="num-v">${idx + 1}</span>${v}</p>`;
+    const seletor = document.getElementById('seletorCapitulos');
+    seletor.innerHTML = '';
+
+    // Se tiver mais de um capítulo, cria os botões de números
+    if (livro.chapters.length > 1) {
+        livro.chapters.forEach((_, idx) => {
+            const btnCap = document.createElement('button');
+            btnCap.innerText = idx + 1;
+            btnCap.className = "bg-white border border-[#e0d9c1] px-4 py-2 rounded-lg font-bold text-[#5d4037]";
+            btnCap.onclick = () => carregarCapitulo(i, idx);
+            seletor.appendChild(btnCap);
         });
     }
+
+    carregarCapitulo(i, 0); // Carrega o primeiro capítulo automaticamente
+}
+
+function carregarCapitulo(livroIdx, capIdx) {
+    const livro = livros[livroIdx];
+    let html = '';
+    
+    livro.chapters[capIdx].forEach((v, idx) => {
+        html += `<p class="versiculo"><span class="num-v">${idx + 1}</span>${v}</p>`;
+    });
+    
     document.getElementById('texto').innerHTML = html;
     window.scrollTo(0, 0);
+    
+    // Marcar visualmente o capítulo selecionado (opcional)
+    const botoes = document.querySelectorAll('#seletorCapitulos button');
+    botoes.forEach((btn, i) => {
+        btn.style.backgroundColor = (i === capIdx) ? "#5d4037" : "#fff";
+        btn.style.color = (i === capIdx) ? "#fff" : "#5d4037";
+    });
 }
 
 function irParaMenu() {
