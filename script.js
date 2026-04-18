@@ -24,17 +24,12 @@ fetch('./biblia.json')
 function renderizarMenu() {
     const grade = document.getElementById('listaLivros');
     if (!grade) return;
-    
-    grade.innerHTML = ''; // Limpa a grade antes de preencher
-    
-    if (livros.length === 0) {
-        grade.innerHTML = '<p class="text-center col-span-full">Carregando livros...</p>';
-        return;
-    }
+    grade.innerHTML = '';
 
     livros.forEach((l, i) => {
         const b = document.createElement('button');
-        b.className = 'btn-livro';
+        // AQUI: Garantindo que a classe do CSS seja aplicada
+        b.className = 'btn-livro'; 
         b.innerText = l.name;
         b.onclick = () => abrirLivro(i);
         grade.appendChild(b);
@@ -50,10 +45,10 @@ function abrirLivro(i) {
     document.getElementById('nomeLivro').innerText = livro.name;
     
     let html = '';
-    // Mostra o capítulo 1 por padrão
     if (livro.chapters && livro.chapters[0]) {
         livro.chapters[0].forEach((v, idx) => {
-            html += `<span class="versiculo"><span class="num-v">${idx + 1}</span>${v} </span>`;
+            // AQUI: Envolvendo o texto na classe .versiculo
+            html += `<div class="versiculo"><span class="num-v">${idx + 1}</span>${v}</div>`;
         });
     }
     document.getElementById('texto').innerHTML = html;
