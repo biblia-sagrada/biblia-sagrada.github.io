@@ -1,13 +1,12 @@
 /* Configurações Gerais e Fontes */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
 
 body { 
-    background-color: #f7f3e9; 
+    background-color: #f8f5f0; /* Um tom "creme" levemente mais suave para não cansar a vista */
     color: #2c2c2c; 
-    font-family: 'Georgia', serif; 
+    font-family: 'Inter', sans-serif; /* Fonte padrão para a interface */
     margin: 0; 
     padding: 0; 
-    overflow-x: hidden;
 }
 
 /* Header Compacto */
@@ -40,8 +39,39 @@ header h1 { font-size: 1.1rem; margin: 0; color: #5d4037; font-family: 'Inter', 
 .btn-livro:active { transform: translateY(2px); box-shadow: none; }
 
 /* Texto da Bíblia */
-.leitura { display: none; font-size: 22px; line-height: 1.8; text-align: justify; }
-.num-v { font-size: 0.6em; font-weight: bold; color: #a1887f; margin-right: 6px; vertical-align: super; }
+.leitura { 
+    display: none; 
+    font-family: 'Lora', serif; /* Fonte específica para leitura */
+    font-size: 20px; /* Tamanho ideal para mobile */
+    line-height: 1.6; 
+    text-align: left; /* Alinhamento à esquerda para evitar buracos */
+    hyphens: auto; /* Hifenização automática (opcional, mas ajuda) */
+    color: #3e2723;
+}
+.versiculo {
+    display: inline; /* Mantém o texto corrido, estilo parágrafo */
+    margin-bottom: 8px;
+}
+.num-v { 
+    font-family: 'Inter', sans-serif;
+    font-size: 0.55em; 
+    font-weight: 800; 
+    color: #a1887f; 
+    margin-right: 4px; 
+    vertical-align: super;
+}
+.btn-livro { 
+    font-family: 'Inter', sans-serif;
+    background: #ffffff; 
+    border: 1px solid #e0d9c1; 
+    padding: 12px 5px; 
+    border-radius: 12px; /* Bordas mais arredondadas e modernas */
+    font-size: 15px; 
+    font-weight: 600; 
+    color: #5d4037;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 .btn-acao { background: #5d4037; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
 
 /* Rodapé de Ofertas (Anúncios) */
