@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bíblia Sagrada - Palavra que Fortifica</title>
+    <style>
+        /* Estética de Bíblia Impressa - Foco na 3ª Idade */
+        body {
+            background-color: #fcf9f2; /* Cor de papel creme suave */
+            color: #333;
+            font-family: 'Georgia', serif; /* Fonte de livro */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 40px 20px;
+            text-align: center;
+            background-color: #fff;
+            border-bottom: 2px solid #e8e2d0;
+        }
+
+        h1 { 
+            margin: 0; 
+            font-size: 32px; 
+            color: #5d4037; 
+            letter-spacing: 1px;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .instrucao {
+            font-size: 20px;
+            margin: 20px 0 40px 0;
+            color: #555;
+            font-style: italic;
+        }
+
+        /* Botões grandes para facilitar o toque */
+        .btn-testamento {
+            display: block;
+            background-color: #5d4037;
+            color: white;
+            padding: 30px 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .btn-testamento:active {
+            transform: scale(0.98);
+        }
+
+        .btn-whatsapp {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #25d366;
+            color: white;
+            padding: 18px 30px;
+            margin-top: 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Barra de Propaganda (Fixa no fundo) */
+        .propaganda {
+            background-color: #f0f0f0;
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Bíblia Sagrada</h1>
+    <p style="color: #8d6e63; font-weight: bold;">Palavra que Fortifica</p>
+</header>
+
+<div class="container">
+    <p class="instrucao">Toque no que deseja ler hoje:</p>
+    
+    <a href="#" class="btn-testamento">ANTIGO TESTAMENTO</a>
+    <a href="#" class="btn-testamento">NOVO TESTAMENTO</a>
+
+    <a href="https://api.whatsapp.com/send?text=Olá! Encontrei este site maravilhoso para ler a Bíblia de forma simples: https://biblia-sagrada.github.io" class="btn-whatsapp" target="_blank">
+        Compartilhar no WhatsApp
+    </a>
+</div>
+
+<div class="propaganda">
+    <small style="color: #999; display: block; margin-bottom: 5px;">Publicidade</small>
+    <div style="height: 60px; background: #e8e8e8; display: flex; align-items: center; justify-content: center; border: 1px dashed #bbb; color: #777;">
+        Espaço para o seu anúncio (Barra inferior)
+    </div>
+</div>
+
+</body>
+</html>
