@@ -1,24 +1,43 @@
 [
   {
-    "abbrev": "gn",
+    "name": "Gênesis",
     "chapters": [
       [
         "No princípio criou Deus os céus e a terra.",
         "E a terra era sem forma e vazia; e havia trevas sobre a face do abismo; e o Espírito de Deus se movia sobre a face das águas.",
         "E disse Deus: Haja luz; e houve luz."
+      ],
+      [
+        "Assim os céus, a terra e todo o seu exército foram acabados.",
+        "E havendo Deus acabado no dia sétimo a obra que fizera, descansou no sétimo dia de toda a obra que fizera.",
+        "E abençoou Deus o dia sétimo, e o santificou; porque nele descansou de toda a sua obra."
       ]
-    ],
-    "name": "Gênesis"
+    ]
   },
   {
-    "abbrev": "sl",
+    "name": "Salmos",
     "chapters": [
+      [
+        "Bem-aventurado o homem que não anda segundo o conselho dos ímpios, nem se detém no caminho dos pecadores, nem se assenta na roda dos escarnecedores."
+      ],
+      [
+        "Por que se amotinam os gentios, e os povos imaginam coisas vazias?"
+      ],
       [
         "O SENHOR é o meu pastor, nada me faltará.",
         "Deitar-me faz em verdes pastos, guia-me mansamente a águas tranquilas.",
         "Refrigera a minha alma; guia-me pelas veredas da justiça, por amor do seu nome."
       ]
-    ],
-    "name": "Salmos"
+    ]
+  },
+  {
+    "name": "João",
+    "chapters": [
+      [
+        "No princípio era o Verbo, e o Verbo estava com Deus, e o Verbo era Deus.",
+        "Ele estava no princípio com Deus.",
+        "Todas as coisas foram feitas por ele, e sem ele nada do que foi feito se fez."
+      ]
+    ]
   }
 ]
