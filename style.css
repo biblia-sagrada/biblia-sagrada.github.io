@@ -39,6 +39,33 @@ header h1 { font-size: 1.1rem; margin: 0; color: #5d4037; font-family: 'Inter', 
 .btn-livro:active { transform: translateY(2px); box-shadow: none; }
 
 /* Texto da Bíblia */
+
+/* Container do texto da bíblia */
+#texto {
+    padding: 10px 5px;
+    text-align: left; /* Mantendo à esquerda para evitar buracos */
+    line-height: 1.8; /* Espaçamento entre linhas para facilitar a leitura */
+}
+
+/* O versículo como parte do fluxo de texto */
+.versiculo {
+    display: inline; /* Faz com que um versículo siga o outro na mesma linha */
+    font-family: 'Lora', serif;
+    color: #3e2723;
+    margin-right: 4px; /* Pequeno espaço entre o fim de um versículo e o início do próximo */
+}
+
+/* O número do versículo levemente elevado */
+.num-v { 
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6em; 
+    font-weight: 800; 
+    color: #a1887f; 
+    margin-right: 4px; 
+    vertical-align: super;
+    line-height: 0;
+}
+
 .leitura { 
     display: none; 
     font-family: 'Lora', serif; /* Fonte específica para leitura */
@@ -48,18 +75,7 @@ header h1 { font-size: 1.1rem; margin: 0; color: #5d4037; font-family: 'Inter', 
     hyphens: auto; /* Hifenização automática (opcional, mas ajuda) */
     color: #3e2723;
 }
-.versiculo {
-    display: inline; /* Mantém o texto corrido, estilo parágrafo */
-    margin-bottom: 8px;
-}
-.num-v { 
-    font-family: 'Inter', sans-serif;
-    font-size: 0.55em; 
-    font-weight: 800; 
-    color: #a1887f; 
-    margin-right: 4px; 
-    vertical-align: super;
-}
+
 .btn-livro { 
     font-family: 'Inter', sans-serif;
     background: #ffffff; 
