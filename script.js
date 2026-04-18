@@ -5,14 +5,20 @@ const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7
 
 // --- LÓGICA DA BÍBLIA ---
 
-// Carregar o JSON da Bíblia
-fetch('js/biblia.json')
-    .then(res => res.json())
+// Carregar o JSON da Bíblia (Agora apontando para a raiz)
+fetch('./biblia.json') 
+    .then(res => {
+        if (!res.ok) throw new Error('Erro ao carregar biblia.json');
+        return res.json();
+    })
     .then(data => {
         livros = data;
         renderizarMenu();
     })
-    .catch(err => console.error("Erro ao carregar biblia.json. Verifique a pasta js/", err));
+    .catch(err => {
+        console.error("Erro:", err);
+        document.getElementById('listaLivros').innerHTML = '<p class="text-center col-span-full text-red-500">Erro ao carregar os livros. Verifique se o arquivo biblia.json está na raiz.</p>';
+    });
 
 // Renderiza a lista de botões dos livros
 function renderizarMenu() {
