@@ -48,14 +48,50 @@ header h1 { font-size: 1.1rem; margin: 0; color: #5d4037; font-family: 'Inter', 
 #content-area {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: #ffffff; border-top: 2px solid #5147e6;
-    z-index: 1000; height: 100px; transition: all 0.3s ease-in-out;
+    z-index: 1000; height: 110px; /* Aumentei um pouco a altura para acomodar as 3 linhas */
+    transition: all 0.3s ease-in-out;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
 #content-area.collapsed { height: 35px; }
 
-.content-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: inherit; }
+.content-wrapper { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    padding: 10px; 
+    text-decoration: none; 
+    color: inherit; 
+    height: 100%;
+}
 
-.content-image { width: 75px; height: 75px; object-fit: cover; border-radius: 8px; flex-shrink: 0; border: 1px solid #eee; }
+.content-image { 
+    width: 80px; 
+    height: 80px; 
+    object-fit: cover; 
+    border-radius: 8px; 
+    flex-shrink: 0; 
+    border: 1px solid #eee; 
+}
 
-.loading-state { text-align: center; color: #999; font-size: 12px; padding: 10px; }
+/* Título em 1 linha (truncate) */
+#content-title {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #4338ca;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+/* Descrição em até 3 linhas com reticências (...) */
+#offer-description {
+    font-size: 0.75rem;
+    color: #4b5563;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limita a 3 linhas */
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    line-height: 1.2;
+}
