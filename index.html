@@ -3,92 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Sagrada</title>
+    <title>Bíblia Sagrada - Palavra que Fortifica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilo Minimalista - Experiência de Livro */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
         body { 
-            background-color: #f7f3e9; /* Tom marfim/papel */
+            background-color: #f7f3e9; 
             color: #2c2c2c; 
-            font-family: 'serif', Georgia, 'Times New Roman'; 
+            font-family: 'Georgia', serif; 
             margin: 0; 
             padding: 0; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Cabeçalho ultra-compacto */
+        /* Header em uma única linha para economizar espaço */
         header { 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px; 
-            background-color: #fff; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px 15px; 
+            background: #fff; 
             border-bottom: 1px solid #e0d9c1;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        
-        header h1 { font-size: 1.2rem; margin: 0; color: #5d4037; }
-        header span { font-size: 0.8rem; font-weight: bold; color: #8d6e63; }
+        header h1 { font-size: 1.1rem; margin: 0; color: #5d4037; font-family: 'Inter', sans-serif; }
+        header span { font-size: 0.75rem; color: #8d6e63; font-weight: bold; }
 
-        .container { 
-            flex: 1; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 15px; 
-            width: 100%;
-            box-sizing: border-box;
-        }
+        .container { max-width: 700px; margin: 0 auto; padding: 15px; padding-bottom: 120px; }
 
-        /* Botões de Livros (Estilo Lista de Sumário) */
-        .lista-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
+        /* Grade de Livros */
+        .lista-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
         .btn-livro { 
-            background: #fff; 
-            border: 1px solid #d3cebd;
-            padding: 15px 10px; 
-            border-radius: 8px; 
-            font-size: 18px; 
-            font-weight: bold;
-            color: #5d4037;
-            cursor: pointer;
-            box-shadow: 0 2px 0 #d3cebd;
+            background: #fff; border: 1px solid #d3cebd; padding: 15px 5px; 
+            border-radius: 8px; font-size: 17px; font-weight: bold; color: #5d4037;
+            cursor: pointer; box-shadow: 0 2px 0 #d3cebd;
         }
 
-        .btn-livro:active { transform: translateY(2px); box-shadow: none; }
-
-        /* Área de Leitura */
-        .leitura { 
-            display: none; 
-            background: transparent; 
-            font-size: 22px; /* Letra confortável */
-            line-height: 1.8;
-            text-align: justify;
-        }
-
-        .capitulo-titulo { font-size: 1.5rem; text-align: center; color: #5d4037; margin-bottom: 20px; }
-
-        .versiculo { margin-bottom: 10px; display: inline; }
+        /* Texto da Bíblia */
+        .leitura { display: none; font-size: 22px; line-height: 1.8; text-align: justify; }
         .num-v { font-size: 0.6em; font-weight: bold; color: #a1887f; margin-right: 4px; vertical-align: super; }
+        .btn-acao { background: #5d4037; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
 
-        .controles { display: flex; justify-content: space-between; margin-top: 30px; padding-bottom: 50px; }
-        .btn-acao { background: #5d4037; color: #fff; border: none; padding: 12px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        /* Propaganda fixa e discreta */
-        .footer-ads { 
-            background: #fff; 
-            border-top: 1px solid #ddd; 
-            position: sticky; 
-            bottom: 0; 
-            width: 100%; 
-            padding: 5px;
-            text-align: center;
+        /* Estilos do Carrossel de Publicidade (Vindo do seu outro site) */
+        #content-area {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #fff; border-top: 1px solid #ddd;
+            z-index: 50; transition: height 0.3s;
         }
+        .collapsed { height: 40px !important; }
+        .collapsed .content-wrapper { display: none !important; }
     </style>
 </head>
 <body>
@@ -100,31 +66,35 @@
 
 <div class="container">
     <div id="menu">
+        <p style="text-align:center; color:#666; font-size:18px;">Escolha um livro para ler:</p>
         <div class="lista-grid" id="listaLivros"></div>
     </div>
 
     <div id="telaLeitura" class="leitura">
-        <button class="btn-acao" onclick="irParaMenu()" style="background:#8d6e63; margin-bottom:20px;">⬅ Voltar</button>
-        <div class="capitulo-titulo" id="nomeLivro"></div>
+        <button class="btn-acao" onclick="irParaMenu()">⬅ Voltar</button>
+        <h2 id="nomeLivro" style="text-align:center; color:#5d4037;"></h2>
         <div id="texto"></div>
-        
-        <div class="controles">
-            <a id="btnZap" href="#" target="_blank" class="btn-acao" style="background:#25d366; text-decoration:none;">Compartilhar</a>
-        </div>
     </div>
 </div>
 
-<div class="footer-ads">
-    <div style="font-size:10px; color:#aaa;">PUBLICIDADE</div>
-    <div id="ads-container" style="height: 50px; background:#fafafa; display:flex; align-items:center; justify-content:center; font-size:12px; color:#ccc; border:1px dashed #eee;">
-        Anúncio aqui
-    </div>
+<div id="content-area" class="p-2 shadow-lg">
+    <button id="collapse-button" class="absolute -top-3 right-4 bg-gray-200 rounded-full p-1 text-xs">▼</button>
+    <div id="loading-ads" class="text-center text-xs text-gray-400">Carregando ofertas...</div>
+    <a id="content-link" href="#" target="_blank" class="content-wrapper flex items-center gap-3 hidden">
+        <img id="content-image" class="w-16 h-16 object-cover rounded-lg" src="" alt="">
+        <div class="min-w-0">
+            <h3 id="content-title" class="text-sm font-bold text-gray-800 truncate"></h3>
+            <p id="offer-description" class="text-xs text-gray-500 line-clamp-2"></p>
+        </div>
+    </a>
 </div>
 
 <script>
     let livros = [];
+    let offersData = [];
+    const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
 
-    // Carrega o JSON da pasta js/
+    // 1. Carregar Bíblia
     fetch('js/biblia.json')
         .then(res => res.json())
         .then(data => {
@@ -146,23 +116,14 @@
 
     function abrirLivro(i) {
         document.getElementById('menu').style.display = 'none';
-        const tela = document.getElementById('telaLeitura');
-        tela.style.display = 'block';
-        
+        document.getElementById('telaLeitura').style.display = 'block';
         const livro = livros[i];
         document.getElementById('nomeLivro').innerText = livro.name;
-        
-        // Exibe o capítulo 1 por enquanto
         let html = '';
         livro.chapters[0].forEach((v, idx) => {
             html += `<span class="versiculo"><span class="num-v">${idx+1}</span>${v} </span>`;
         });
         document.getElementById('texto').innerHTML = html;
-
-        // Configura WhatsApp
-        const msg = encodeURIComponent(`Leitura de hoje: ${livro.name}. Veja aqui: ${window.location.href}`);
-        document.getElementById('btnZap').href = `https://api.whatsapp.com/send?text=${msg}`;
-        
         window.scrollTo(0,0);
     }
 
@@ -170,6 +131,39 @@
         document.getElementById('menu').style.display = 'block';
         document.getElementById('telaLeitura').style.display = 'none';
     }
+
+    // 2. Lógica da Publicidade (Sua Planilha)
+    async function fetchOffers() {
+        try {
+            const response = await fetch(OFFERS_CSV_URL);
+            const text = await response.text();
+            const lines = text.split('\n').slice(1);
+            offersData = lines.map(line => {
+                const cols = line.split(',');
+                return { title: cols[0], link: cols[1], img: cols[2], desc: cols[3] };
+            }).filter(o => o.img);
+            rotateOffers();
+            setInterval(rotateOffers, 10000);
+        } catch (e) { console.error("Erro anúncios", e); }
+    }
+
+    function rotateOffers() {
+        if (offersData.length === 0) return;
+        const ad = offersData[Math.floor(Math.random() * offersData.length)];
+        document.getElementById('loading-ads').classList.add('hidden');
+        document.getElementById('content-link').classList.remove('hidden');
+        document.getElementById('content-title').innerText = ad.title.replace(/"/g, '');
+        document.getElementById('content-image').src = ad.img.trim();
+        document.getElementById('content-link').href = ad.link;
+        document.getElementById('offer-description').innerText = ad.desc || "";
+    }
+
+    // Botão Recolher
+    document.getElementById('collapse-button').onclick = () => {
+        document.getElementById('content-area').classList.toggle('collapsed');
+    };
+
+    fetchOffers();
 </script>
 
 </body>
