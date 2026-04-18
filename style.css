@@ -39,13 +39,10 @@ header {
     justify-content: space-between; 
     align-items: center; 
     padding: 0 8px; 
-    background: #ffffff; 
+    background: #fff; 
     border-bottom: 2px solid var(--border-color);
-    position: sticky; 
-    top: 0; 
-    z-index: 1000; 
-    height: 60px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    position: sticky; top: 0; z-index: 1000; 
+    height: 75px; /* Aumentei um pouco a altura para caber o botão de 2 linhas */
 }
 
 .header-left { 
@@ -90,12 +87,17 @@ header {
     background: var(--primary-color);
     color: white;
     border: none;
-    padding: 6px 8px;
-    border-radius: 6px;
-    font-size: 0.72rem;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem; /* Fonte ajustada */
     font-weight: bold;
-    white-space: nowrap;
+    line-height: 1.1; /* Texto mais juntinho */
+    text-align: center;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 85px; /* Garante um tamanho bom para o toque */
 }
 
 .btn-testamento:active { 
