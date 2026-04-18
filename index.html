@@ -11,13 +11,18 @@
 <body>
 
 <header>
-    <div class="logo-area">
+    <div class="header-left" onclick="irParaMenu()" style="cursor:pointer">
         <img src="logo150.jpg" alt="Logo" class="logo-img">
-        <h1>Bíblia Sagrada</h1>
+        <div class="logo-text">
+            <span class="title-biblia">Bíblia<br>Sagrada</span>
+            <span class="subtitle-biblia">Palavra que fortifica</span>
+        </div>
     </div>
-    <span class="text-[10px] uppercase text-amber-800 font-bold leading-tight text-right">
-        Palavra que<br>Fortifica
-    </span>
+
+    <div class="header-nav">
+        <button class="btn-testamento" onclick="filtrarTestamento('velho')">Velho</button>
+        <button class="btn-testamento" onclick="filtrarTestamento('novo')">Novo</button>
+    </div>
 </header>
 
 <main class="container">
