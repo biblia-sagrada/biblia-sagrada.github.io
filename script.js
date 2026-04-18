@@ -1,30 +1,7 @@
+// --- CONFIGURAÇÕES E DADOS GLOBAIS ---
 let livros = [];
 let offersData = [];
 const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
-
-// Carregar Bíblia
-fetch('./biblia.json')
-    .then(res => res.json())
-    .then(data => {
-        livros = data;
-        renderizarMenu();
-    }).catch(err => console.error("Erro ao carregar biblia.json", err));
-
-// Renderiza o Índice Principal
-function renderizarMenu() {
-    const grade = document.getElementById('listaLivros');
-    document.getElementById('menu').style.display = 'block';
-    document.getElementById('telaLeitura').style.display = 'none';
-    
-    grade.innerHTML = '';
-    livros.forEach((l, i) => {
-        const b = document.createElement('button');
-        b.className = 'btn-livro';
-        b.innerText = l.name;
-        b.onclick = () => abrirSeletorCapitulos(i);
-        grade.appendChild(b);
-    });
-}
 
 // Lista de livros do Novo Testamento para o filtro automático
 const livrosNovoTestamento = [
@@ -35,17 +12,36 @@ const livrosNovoTestamento = [
     "1 João", "2 João", "3 João", "Judas", "Apocalipse"
 ];
 
+// --- INICIALIZAÇÃO ---
+
+// Busca o JSON da Bíblia na raiz
+fetch('./biblia.json')
+    .then(res => {
+        if (!res.ok) throw new Error("Erro ao carregar biblia.json");
+        return res.json();
+    })
+    .then(data => {
+        livros = data;
+        renderizarMenu(); // Inicia mostrando todos os livros
+    })
+    .catch(err => console.error(err));
+
+// --- NAVEGAÇÃO E FILTROS ---
+
+// Renderiza a lista de livros (Todos, Velho ou Novo)
 function filtrarTestamento(tipo) {
     const grade = document.getElementById('listaLivros');
     document.getElementById('menu').style.display = 'block';
     document.getElementById('telaLeitura').style.display = 'none';
     
+    // Limpa a grade e o topo
     grade.innerHTML = '';
-    
+    window.scrollTo(0, 0);
+
+    // Se 'todos', renderiza tudo. Se não, filtra.
     livros.forEach((l, i) => {
         const isNovo = livrosNovoTestamento.includes(l.name);
-        
-        if ((tipo === 'novo' && isNovo) || (tipo === 'velho' && !isNovo)) {
+        if (tipo === 'todos' || (tipo === 'novo' && isNovo) || (tipo === 'velho' && !isNovo)) {
             const b = document.createElement('button');
             b.className = 'btn-livro';
             b.innerText = l.name;
@@ -53,15 +49,14 @@ function filtrarTestamento(tipo) {
             grade.appendChild(b);
         }
     });
-    window.scrollTo(0, 0);
 }
 
-// Altere a função irParaMenu para que ela volte ao índice completo ou ao último filtro
+// Atalho para voltar ao início total
 function irParaMenu() {
-    renderizarMenu(); // Mostra todos os livros novamente
+    filtrarTestamento('todos');
 }
 
-// 1ª Etapa: Abre a grade de capítulos do livro escolhido
+// Abre a grade de números dos capítulos
 function abrirSeletorCapitulos(livroIdx) {
     const livro = livros[livroIdx];
     document.getElementById('menu').style.display = 'none';
@@ -71,37 +66,41 @@ function abrirSeletorCapitulos(livroIdx) {
     const seletor = document.getElementById('seletorCapitulos');
     const areaTexto = document.getElementById('texto');
     
-    areaTexto.innerHTML = ''; // Limpa texto anterior
-    seletor.innerHTML = ''; // Limpa seletor anterior
-    seletor.className = "lista-grid"; // Usa a mesma grade dos livros para os números
+    areaTexto.innerHTML = ''; 
+    seletor.innerHTML = ''; 
+    seletor.className = "lista-grid"; // Garante que os números fiquem em grade
 
     // Cria botões grandes para cada capítulo
     livro.chapters.forEach((_, capIdx) => {
         const btnCap = document.createElement('button');
         btnCap.innerText = capIdx + 1;
-        btnCap.className = "btn-livro"; // Reutiliza o estilo de botão bonito
+        btnCap.className = 'btn-livro';
         btnCap.onclick = () => carregarCapitulo(livroIdx, capIdx);
         seletor.appendChild(btnCap);
     });
 
-    // Se o livro só tiver 1 capítulo, carrega direto
     if (livro.chapters.length === 1) {
         carregarCapitulo(livroIdx, 0);
     } else {
-        areaTexto.innerHTML = `<p class="text-center text-gray-500 mt-4">Escolha o número do capítulo acima.</p>`;
+        areaTexto.innerHTML = `<p class="text-center text-gray-500 mt-6 font-bold">Toque no número do capítulo:</p>`;
     }
     window.scrollTo(0, 0);
 }
 
-// 2ª Etapa: Mostra os versículos do capítulo escolhido
+// Carrega os versículos do capítulo selecionado
 function carregarCapitulo(livroIdx, capIdx) {
     const livro = livros[livroIdx];
     const seletor = document.getElementById('seletorCapitulos');
     const areaTexto = document.getElementById('texto');
     
-    // Esconde o seletor de capítulos para dar espaço ao texto (opcional)
-    // Se quiser que os números continuem aparecendo, comente a linha abaixo:
-    seletor.innerHTML = `<button class="btn-acao" onclick="abrirSeletorCapitulos(${livroIdx})"> Escolher outro capítulo</button>`;
+    // Simplifica o seletor para mostrar apenas onde o usuário está
+    seletor.className = ""; 
+    seletor.innerHTML = `
+        <div class="flex justify-between items-center bg-amber-50 p-3 rounded-lg border border-amber-200 mb-6">
+            <span class="font-bold text-amber-900">Capítulo ${capIdx + 1}</span>
+            <button onclick="abrirSeletorCapitulos(${livroIdx})" class="text-xs bg-amber-200 text-amber-900 px-3 py-1 rounded-md font-bold uppercase">Trocar Capítulo</button>
+        </div>
+    `;
 
     let html = '';
     livro.chapters[capIdx].forEach((v, idx) => {
@@ -109,15 +108,16 @@ function carregarCapitulo(livroIdx, capIdx) {
     });
     
     areaTexto.innerHTML = html;
-    document.getElementById('nomeLivro').innerText = `${livro.name} - Cap. ${capIdx + 1}`;
     window.scrollTo(0, 0);
 }
 
-function irParaMenu() {
-    renderizarMenu();
+// Função padrão de renderização (Início)
+function renderizarMenu() {
+    filtrarTestamento('todos');
 }
 
-// --- LÓGICA DE OFERTAS ---
+// --- LÓGICA DE OFERTAS (CSV) ---
+
 function parseCsvLine(line) {
     const result = [];
     let inQuote = false;
@@ -154,26 +154,36 @@ async function fetchOffers() {
             updateOffer();
             setInterval(updateOffer, 10000);
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Erro nos anúncios:", e); }
 }
 
 function updateOffer() {
+    if (offersData.length === 0) return;
     const ad = offersData[Math.floor(Math.random() * offersData.length)];
     const link = document.getElementById('content-link');
-    if (!ad || !link) return;
-    document.getElementById('loading-ads').classList.add('hidden');
-    link.classList.remove('hidden');
-    document.getElementById('content-title').textContent = ad['Item_Name'] || "";
-    document.getElementById('content-image').src = ad['img'] || "";
-    document.getElementById('offer-description').textContent = ad['Description'] || "";
-    link.href = ad['Offer_Link'] || "#";
+    const loading = document.getElementById('loading-ads');
+    
+    if (loading) loading.classList.add('hidden');
+    if (link) {
+        link.classList.remove('hidden');
+        document.getElementById('content-title').textContent = ad['Item_Name'] || "";
+        document.getElementById('content-image').src = ad['img'] || "";
+        document.getElementById('offer-description').textContent = ad['Description'] || "";
+        link.href = ad['Offer_Link'] || "#";
+    }
 }
+
+// --- EVENTOS DE CARREGAMENTO ---
 
 window.onload = () => {
     fetchOffers();
-    document.getElementById('collapse-button').onclick = () => {
-        const area = document.getElementById('content-area');
-        area.classList.toggle('collapsed');
-        document.getElementById('collapse-button').innerText = area.classList.contains('collapsed') ? '▲' : '▼';
-    };
+    // Botão de recolher o rodapé
+    const collapseBtn = document.getElementById('collapse-button');
+    if (collapseBtn) {
+        collapseBtn.onclick = () => {
+            const area = document.getElementById('content-area');
+            area.classList.toggle('collapsed');
+            collapseBtn.innerText = area.classList.contains('collapsed') ? '▲' : '▼';
+        };
+    }
 };
