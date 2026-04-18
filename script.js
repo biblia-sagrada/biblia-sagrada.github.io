@@ -2,7 +2,7 @@ let livros = [];
 let offersData = [];
 const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
 
-// Carregar Bíblia da Raiz
+// Carregar Bíblia
 fetch('./biblia.json')
     .then(res => res.json())
     .then(data => {
@@ -10,67 +10,79 @@ fetch('./biblia.json')
         renderizarMenu();
     }).catch(err => console.error("Erro ao carregar biblia.json", err));
 
+// Renderiza o Índice Principal
 function renderizarMenu() {
     const grade = document.getElementById('listaLivros');
-    if (!grade) return;
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('telaLeitura').style.display = 'none';
+    
     grade.innerHTML = '';
     livros.forEach((l, i) => {
         const b = document.createElement('button');
         b.className = 'btn-livro';
         b.innerText = l.name;
-        b.onclick = () => abrirLivro(i);
+        b.onclick = () => abrirSeletorCapitulos(i);
         grade.appendChild(b);
     });
 }
 
-function abrirLivro(i) {
+// 1ª Etapa: Abre a grade de capítulos do livro escolhido
+function abrirSeletorCapitulos(livroIdx) {
+    const livro = livros[livroIdx];
     document.getElementById('menu').style.display = 'none';
     document.getElementById('telaLeitura').style.display = 'block';
-    const livro = livros[i];
-    document.getElementById('nomeLivro').innerText = livro.name;
     
+    document.getElementById('nomeLivro').innerText = livro.name;
     const seletor = document.getElementById('seletorCapitulos');
-    seletor.innerHTML = '';
+    const areaTexto = document.getElementById('texto');
+    
+    areaTexto.innerHTML = ''; // Limpa texto anterior
+    seletor.innerHTML = ''; // Limpa seletor anterior
+    seletor.className = "lista-grid"; // Usa a mesma grade dos livros para os números
 
-    // Se tiver mais de um capítulo, cria os botões de números
-    if (livro.chapters.length > 1) {
-        livro.chapters.forEach((_, idx) => {
-            const btnCap = document.createElement('button');
-            btnCap.innerText = idx + 1;
-            btnCap.className = "bg-white border border-[#e0d9c1] px-4 py-2 rounded-lg font-bold text-[#5d4037]";
-            btnCap.onclick = () => carregarCapitulo(i, idx);
-            seletor.appendChild(btnCap);
-        });
+    // Cria botões grandes para cada capítulo
+    livro.chapters.forEach((_, capIdx) => {
+        const btnCap = document.createElement('button');
+        btnCap.innerText = capIdx + 1;
+        btnCap.className = "btn-livro"; // Reutiliza o estilo de botão bonito
+        btnCap.onclick = () => carregarCapitulo(livroIdx, capIdx);
+        seletor.appendChild(btnCap);
+    });
+
+    // Se o livro só tiver 1 capítulo, carrega direto
+    if (livro.chapters.length === 1) {
+        carregarCapitulo(livroIdx, 0);
+    } else {
+        areaTexto.innerHTML = `<p class="text-center text-gray-500 mt-4">Escolha o número do capítulo acima.</p>`;
     }
-
-    carregarCapitulo(i, 0); // Carrega o primeiro capítulo automaticamente
+    window.scrollTo(0, 0);
 }
 
+// 2ª Etapa: Mostra os versículos do capítulo escolhido
 function carregarCapitulo(livroIdx, capIdx) {
     const livro = livros[livroIdx];
-    let html = '';
+    const seletor = document.getElementById('seletorCapitulos');
+    const areaTexto = document.getElementById('texto');
     
+    // Esconde o seletor de capítulos para dar espaço ao texto (opcional)
+    // Se quiser que os números continuem aparecendo, comente a linha abaixo:
+    seletor.innerHTML = `<button class="btn-acao" onclick="abrirSeletorCapitulos(${livroIdx})"> Escolher outro capítulo</button>`;
+
+    let html = '';
     livro.chapters[capIdx].forEach((v, idx) => {
         html += `<p class="versiculo"><span class="num-v">${idx + 1}</span>${v}</p>`;
     });
     
-    document.getElementById('texto').innerHTML = html;
+    areaTexto.innerHTML = html;
+    document.getElementById('nomeLivro').innerText = `${livro.name} - Cap. ${capIdx + 1}`;
     window.scrollTo(0, 0);
-    
-    // Marcar visualmente o capítulo selecionado (opcional)
-    const botoes = document.querySelectorAll('#seletorCapitulos button');
-    botoes.forEach((btn, i) => {
-        btn.style.backgroundColor = (i === capIdx) ? "#5d4037" : "#fff";
-        btn.style.color = (i === capIdx) ? "#fff" : "#5d4037";
-    });
 }
 
 function irParaMenu() {
-    document.getElementById('menu').style.display = 'block';
-    document.getElementById('telaLeitura').style.display = 'none';
+    renderizarMenu();
 }
 
-// Lógica de Ofertas
+// --- LÓGICA DE OFERTAS ---
 function parseCsvLine(line) {
     const result = [];
     let inQuote = false;
@@ -113,6 +125,7 @@ async function fetchOffers() {
 function updateOffer() {
     const ad = offersData[Math.floor(Math.random() * offersData.length)];
     const link = document.getElementById('content-link');
+    if (!ad || !link) return;
     document.getElementById('loading-ads').classList.add('hidden');
     link.classList.remove('hidden');
     document.getElementById('content-title').textContent = ad['Item_Name'] || "";
