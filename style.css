@@ -96,9 +96,9 @@ header {
 
 .topo-fixo-leitura {
     position: sticky;
-    top: 80px; /* Alinhado com a altura do seu header principal */
+    top: 80px; 
     z-index: 1000;
-    background-color: var(--white);
+    background-color: transparent; /* Removemos o branco daqui */
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
@@ -107,7 +107,7 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px;
-    background: var(--white);
+    background: var(--bg); /* Usa a cor palha original da Bíblia */
     border-bottom: 1px solid var(--border);
 }
 
@@ -138,7 +138,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff8f0;
+    background: #fff8f0; /* Mantém o tom levemente diferente para o capítulo */
     padding: 10px 15px;
     border-bottom: 2px solid var(--border);
 }
