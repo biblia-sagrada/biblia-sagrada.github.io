@@ -148,3 +148,27 @@ header {
 .content-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
 
 .loading-state { text-align: center; padding: 40px; font-size: 0.8rem; color: #a1887f; }
+
+/* O Título da Oferta */
+#content-title {
+    font-size: 0.8rem; /* Estava 0.9. Diminuímos para 0.8 */
+    font-weight: bold; 
+    color: var(--accent); 
+    line-height: 1.2;
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; /* Limita a no máximo 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden; 
+    margin-bottom: 2px;
+}
+
+/* A Descrição da Oferta */
+#offer-description {
+    font-size: 0.72rem; /* Estava 0.8. Diminuímos para 0.72 */
+    color: #4b5563; 
+    line-height: 1.1;
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; /* Limita a no máximo 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
