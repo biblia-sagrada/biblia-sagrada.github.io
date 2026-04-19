@@ -1,136 +1,211 @@
-/* --- RESET E CORES --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+
 :root {
     --primary: #5d4037;
-    --accent: #8d6e63;
-    --bg: #ffffff;
-    --border: #e0e0e0;
-    --header-h: 80px;
-    --sub-header-h: 50px;
-    --barra-cap-h: 55px;
+    --accent: #5147e6;
+    --bg: #f8f5f0;
+    --border: #e0d9c1;
+    --white: #ffffff;
 }
 
-body, html {
-    margin: 0;
-    padding: 0;
+body { 
+    background-color: var(--bg); 
+    color: #2c2c2c; 
+    font-family: 'Inter', sans-serif; 
+    margin: 0; padding: 0; 
+}
+
+/* --- Cabeçalho --- */
+header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 8px; 
+    background: #fff; 
+    border-bottom: 2px solid var(--border);
+    position: sticky; top: 0; z-index: 1000; 
+    height: 80px; /* Aumentei levemente para as 3 linhas de texto respirarem */
+}
+
+.header-left { display: flex; align-items: center; gap: 6px; }
+
+.logo-img { 
+    height: 42px; 
+    width: 42px; 
+    border-radius: 8px; 
+    object-fit: cover; 
+}
+
+.logo-text { display: flex; flex-direction: column; line-height: 1; }
+
+.title-biblia { 
+    font-size: 0.95rem; 
+    font-weight: 900; 
+    color: var(--primary); 
+    letter-spacing: 0.5px;
+}
+
+.subtitle-biblia { 
+    font-size: 0.8rem; 
+    color: #a1887f; 
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.tagline-biblia { 
+    font-size: 0.6rem; /* Fonte pequena e discreta */
+    color: #a1887f; 
+    font-weight: 400;
+    font-style: italic; /* Itálico dá um charme de "frase de efeito" */
+    line-height: 1.5; /* O ajuste que você gostou */
+}
+
+.btn-testamento {
+    background: var(--primary); color: white; border: none;
+    padding: 5px 10px; border-radius: 8px; font-size: 0.72rem;
+    font-weight: bold; line-height: 1.1; text-align: center;
+    cursor: pointer; min-width: 85px;
+}
+
+.titulo-selecao {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin: 10px 0 20px 0;
+    font-weight: 700;
+    text-align: center;
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg);
-    overflow-x: hidden;
-}
-
-/* --- 1º NÍVEL: HEADER (LOGO + ABAS) --- */
-header {
-    position: sticky;
-    top: 0;
-    height: var(--header-h);
-    background: #ffffff;
-    z-index: 2000; /* Fica acima de tudo */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
 }
 
-.logo-container { height: 35px; margin-bottom: 5px; }
-.logo-img { height: 100%; pointer-events: auto; cursor: pointer; }
+/* --- Container e Grades --- */
+.container { max-width: 700px; margin: 0 auto; padding: 20px 15px 160px 15px; }
 
-.testamento-selector { display: flex; gap: 10px; }
-.btn-tab {
-    background: none; border: none; padding: 5px 15px;
-    font-weight: bold; color: var(--accent); cursor: pointer;
+.lista-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+
+.btn-livro { 
+    background: var(--white); border: 1px solid var(--border); padding: 15px 5px; 
+    border-radius: 12px; font-size: 14px; font-weight: 700; color: var(--primary);
+    cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* --- 2º NÍVEL: NOME DO LIVRO + WHATSAPP --- */
+/* --- Área de Leitura --- */
+.leitura { display: none; }
+
 .header-leitura {
-    position: sticky;
-    top: var(--header-h); /* Gruda em 80px */
-    height: var(--sub-header-h);
-    background: #ffffff;
-    z-index: 1900;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 15px;
+    padding: 10px 15px;
+    background: var(--bg); /* Cor do fundo para não ficar transparente */
     border-bottom: 1px solid var(--border);
-}
-
-#nomeLivro { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
-
-/* --- 3º NÍVEL: CAPÍTULO + TROCAR --- */
-/* O script injeta esta div dentro de #seletorCapitulos */
-.barra-capitulo {
     position: sticky;
-    top: calc(var(--header-h) + var(--sub-header-h)); /* Gruda em 130px */
-    height: var(--barra-cap-h);
-    background: #fff8f0; /* Tom palha para destaque */
-    z-index: 1800;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-    border-bottom: 2px solid #e0d0b0;
+    top: 75px; /* Fica logo abaixo do header principal (que tem 75px-80px) */
+    z-index: 998;
 }
 
-/* --- GRADES DE BOTÕES --- */
-#listaLivros, .lista-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 12px;
-    padding: 20px;
-}
+#nomeLivro { margin: 0; font-size: 1.6rem; color: var(--primary); font-family: 'Lora', serif; }
 
-.btn-livro {
-    padding: 15px 5px;
-    border: 1px solid var(--border);
-    background: white;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.btn-trocar-cap {
-    background: var(--primary);
+.btn-whatsapp {
+    background-color: #25d366;
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-}
-
-/* --- ÁREA DE TEXTO --- */
-#texto {
-    padding: 20px 20px 180px; /* Espaço no fim para não cobrir com a oferta */
-    font-family: 'Lora', serif;
-    font-size: 22px;
-    line-height: 1.7;
-}
-
-.versiculo { margin-bottom: 18px; }
-.num-v { font-size: 0.6em; font-weight: bold; color: var(--accent); margin-right: 10px; }
-
-/* --- OFERTAS NO RODAPÉ --- */
-#footer-ads {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: white;
-    z-index: 3000;
-    border-top: 1px solid var(--border);
-}
-
-.content-wrapper {
-    display: flex;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800; /* Deixei o texto mais gordinho para o idoso ler melhor */
+    display: inline-flex; /* Mudança para inline-flex */
     align-items: center;
-    justify-content: center; /* Centraliza no Desktop */
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 8px 15px;
-    text-decoration: none;
-    color: inherit;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    line-height: 1; /* Evita que o texto empurre o botão pra baixo */
 }
 
-#content-image { width: 55px; height: 55px; border-radius: 4px; margin-right: 12px; }
-#content-title { font-size: 0.8rem; font-weight: bold; margin: 0; color: #111; }
-#offer-description { font-size: 0.7rem; color: #555; margin: 0; }
+.btn-whatsapp svg {
+    display: block; /* Remove espaços vazios embaixo do SVG */
+    flex-shrink: 0; /* Impede o ícone de amassar se o botão for pequeno */
+}
 
-.hidden { display: none; }
+.barra-capitulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff8f0; /* Um tom levemente diferente para destacar */
+    padding: 10px 15px;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 132px; /* Fica logo abaixo do nome do livro */
+    z-index: 997;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); /* Sombra sutil para dar profundidade */
+}
+
+.label-cap { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
+
+.btn-trocar-cap {
+    background: var(--border); color: var(--primary); border: none;
+    padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold;
+}
+
+#texto {
+    padding-top: 10px;
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    line-height: 1.8;
+}
+
+.versiculo { display: block; margin-bottom: 18px; }
+
+.num-v { font-size: 0.6em; font-weight: 800; color: #a1887f; vertical-align: super; margin-right: 8px; }
+
+#telaLeitura {
+    display: none;
+    position: relative;
+}
+
+/* --- Publicidade --- */
+#content-area {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white); border-top: 3px solid var(--accent);
+    z-index: 2000; height: 110px; transition: height 0.3s; overflow: hidden;
+    height: 95px;
+}
+
+#content-area.collapsed { height: 35px; }
+
+#collapse-button {
+    position: absolute; top: -12px; right: 15px; background: var(--accent);
+    color: white; border-radius: 50%; width: 26px; height: 26px;
+    border: 2px solid #fff; cursor: pointer;
+}
+
+.content-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: inherit; }
+
+.content-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
+
+.loading-state { text-align: center; padding: 40px; font-size: 0.8rem; color: #a1887f; }
+
+/* O Título da Oferta */
+#content-title {
+    font-size: 0.8rem; /* Estava 0.9. Diminuímos para 0.8 */
+    font-weight: bold; 
+    color: var(--accent); 
+    line-height: 1.2;
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; /* Limita a no máximo 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden; 
+    margin-bottom: 2px;
+}
+
+/* A Descrição da Oferta */
+#offer-description {
+    font-size: 0.72rem; /* Estava 0.8. Diminuímos para 0.72 */
+    color: #4b5563; 
+    line-height: 1.1;
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; /* Limita a no máximo 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
