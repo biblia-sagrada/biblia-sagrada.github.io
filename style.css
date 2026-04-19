@@ -1,9 +1,12 @@
+/* --- RESET E CORES --- */
 :root {
     --primary: #5d4037;
     --accent: #8d6e63;
     --bg: #ffffff;
-    --text: #333333;
     --border: #e0e0e0;
+    --header-h: 80px;
+    --sub-header-h: 50px;
+    --barra-cap-h: 55px;
 }
 
 body, html {
@@ -11,82 +14,68 @@ body, html {
     padding: 0;
     font-family: 'Inter', sans-serif;
     background-color: var(--bg);
-    color: var(--text);
     overflow-x: hidden;
 }
 
-/* 1º NÍVEL: HEADER PRINCIPAL */
+/* --- 1º NÍVEL: HEADER (LOGO + ABAS) --- */
 header {
     position: sticky;
     top: 0;
-    height: 80px;
-    background: white;
-    z-index: 1100;
+    height: var(--header-h);
+    background: #ffffff;
+    z-index: 2000; /* Fica acima de tudo */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.logo-container { height: 40px; margin-bottom: 5px; }
-.logo-img { height: 100%; }
+.logo-container { height: 35px; margin-bottom: 5px; }
+.logo-img { height: 100%; pointer-events: auto; cursor: pointer; }
 
-.testamento-selector {
-    display: flex;
-    gap: 10px;
-}
-
+.testamento-selector { display: flex; gap: 10px; }
 .btn-tab {
-    background: none;
-    border: none;
-    padding: 5px 15px;
-    font-weight: bold;
-    color: var(--accent);
-    cursor: pointer;
-    font-size: 14px;
+    background: none; border: none; padding: 5px 15px;
+    font-weight: bold; color: var(--accent); cursor: pointer;
 }
 
-/* 2º NÍVEL: NOME DO LIVRO + WHATSAPP */
+/* --- 2º NÍVEL: NOME DO LIVRO + WHATSAPP --- */
 .header-leitura {
     position: sticky;
-    top: 80px;
-    height: 50px;
-    background: white;
-    z-index: 1050;
+    top: var(--header-h); /* Gruda em 80px */
+    height: var(--sub-header-h);
+    background: #ffffff;
+    z-index: 1900;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 15px;
     border-bottom: 1px solid var(--border);
-    box-sizing: border-box;
 }
 
-#nomeLivro { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+#nomeLivro { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
 
-/* 3º NÍVEL: CAPÍTULO + TROCAR */
+/* --- 3º NÍVEL: CAPÍTULO + TROCAR --- */
+/* O script injeta esta div dentro de #seletorCapitulos */
 .barra-capitulo {
     position: sticky;
-    top: 130px;
-    height: 45px;
-    background: #fff8f0;
-    z-index: 1000;
+    top: calc(var(--header-h) + var(--sub-header-h)); /* Gruda em 130px */
+    height: var(--barra-cap-h);
+    background: #fff8f0; /* Tom palha para destaque */
+    z-index: 1800;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 15px;
     border-bottom: 2px solid #e0d0b0;
-    box-sizing: border-box;
 }
 
-.label-cap { font-weight: bold; color: var(--primary); }
-
-/* CONTEÚDO E GRADES */
+/* --- GRADES DE BOTÕES --- */
 #listaLivros, .lista-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
     padding: 20px;
 }
 
@@ -95,35 +84,38 @@ header {
     border: 1px solid var(--border);
     background: white;
     border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: 500;
 }
 
-.titulo-selecao {
-    text-align: center;
-    padding: 20px 0 10px;
-    color: var(--primary);
-    font-weight: bold;
+.btn-trocar-cap {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 0.8rem;
 }
 
+/* --- ÁREA DE TEXTO --- */
 #texto {
-    padding: 20px 15px 150px; /* Padding extra no fim para a oferta não tampar o texto */
+    padding: 20px 20px 180px; /* Espaço no fim para não cobrir com a oferta */
     font-family: 'Lora', serif;
     font-size: 22px;
-    line-height: 1.8;
+    line-height: 1.7;
 }
 
-.versiculo { margin-bottom: 15px; }
-.num-v { font-size: 0.7em; font-weight: bold; color: var(--accent); margin-right: 8px; vertical-align: top; }
+.versiculo { margin-bottom: 18px; }
+.num-v { font-size: 0.6em; font-weight: bold; color: var(--accent); margin-right: 10px; }
 
-/* OFERTAS CENTRALIZADAS */
+/* --- OFERTAS NO RODAPÉ --- */
 #footer-ads {
     position: fixed;
     bottom: 0;
     width: 100%;
     background: white;
+    z-index: 3000;
     border-top: 1px solid var(--border);
-    z-index: 2000;
 }
 
 .content-wrapper {
@@ -132,14 +124,13 @@ header {
     justify-content: center; /* Centraliza no Desktop */
     max-width: 600px;
     margin: 0 auto;
-    padding: 10px;
+    padding: 8px 15px;
     text-decoration: none;
     color: inherit;
 }
 
-#content-image { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-right: 12px; }
-
-#content-title { font-size: 0.85rem; font-weight: bold; margin: 0; }
-#offer-description { font-size: 0.75rem; color: #666; margin: 2px 0 0; }
+#content-image { width: 55px; height: 55px; border-radius: 4px; margin-right: 12px; }
+#content-title { font-size: 0.8rem; font-weight: bold; margin: 0; color: #111; }
+#offer-description { font-size: 0.7rem; color: #555; margin: 0; }
 
 .hidden { display: none; }
