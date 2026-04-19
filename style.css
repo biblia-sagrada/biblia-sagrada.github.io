@@ -67,6 +67,17 @@ header {
     cursor: pointer; min-width: 85px;
 }
 
+.titulo-selecao {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin: 10px 0 20px 0;
+    font-weight: 700;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
 /* --- Container e Grades --- */
 .container { max-width: 700px; margin: 0 auto; padding: 20px 15px 160px 15px; }
 
