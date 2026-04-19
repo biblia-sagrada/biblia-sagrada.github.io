@@ -64,9 +64,24 @@ header {
 #nomeLivro { margin: 0; font-size: 1.6rem; color: var(--primary); font-family: 'Lora', serif; }
 
 .btn-whatsapp {
-    background-color: #25d366; color: white; border: none;
-    padding: 6px 12px; border-radius: 15px; font-size: 0.75rem;
-    font-weight: bold; display: flex; align-items: center; gap: 5px; cursor: pointer;
+    background-color: #25d366;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800; /* Deixei o texto mais gordinho para o idoso ler melhor */
+    display: inline-flex; /* Mudança para inline-flex */
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    line-height: 1; /* Evita que o texto empurre o botão pra baixo */
+}
+
+.btn-whatsapp svg {
+    display: block; /* Remove espaços vazios embaixo do SVG */
+    flex-shrink: 0; /* Impede o ícone de amassar se o botão for pequeno */
 }
 
 .barra-capitulo {
