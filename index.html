@@ -58,8 +58,13 @@
 </main>
 
 <aside id="content-area">
-    <button id="collapse-button">▼</button>
+    <div class="ads-header-info">
+        <span class="link-ajuda" onclick="abrirInfo()">Por que a publicidade?</span>
+        <button id="collapse-button">▼</button>
+    </div>
+
     <div id="loading-ads" class="loading-state">Deus abençoe todos nós 🙏</div>
+    
     <a id="content-link" href="#" target="_blank" class="content-wrapper hidden">
         <img id="content-image" class="content-image" src="" alt="Oferta">
         <div class="min-w-0">
@@ -68,6 +73,22 @@
         </div>
     </a>
 </aside>
+
+<div id="modalInfo" class="modal-ajuda" onclick="fecharInfo()">
+    <div class="modal-conteudo" onclick="event.stopPropagation()">
+        <span class="fechar-modal" onclick="fecharInfo()">&times;</span>
+        <h3>Sobre este projeto</h3>
+        <p>Este site é uma iniciativa de um cristão solitário que deseja facilitar o acesso à Palavra de Deus.</p>
+        <p><strong>Fique tranquilo:</strong></p>
+        <ul>
+            <li>✅ O site é 100% gratuito.</li>
+            <li>✅ Não pedimos dinheiro nem doações.</li>
+            <li>✅ Não coletamos seus dados (não espionamos).</li>
+        </ul>
+        <p>A publicidade que você vê é apenas para ajudar a manter o site no ar. Se você comprar algo através desses links, você não paga nada a mais por isso, mas uma pequena parte ajuda a manter este projeto vivo. 🙏</p>
+        <button class="btn-entendido" onclick="fecharInfo()">Entendi, obrigado!</button>
+    </div>
+</div>
 
 <script src="script.js"></script>
 </body>
