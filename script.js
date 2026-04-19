@@ -1,6 +1,7 @@
 // --- VARIÁVEIS GLOBAIS ---
 let livros = [];
 let offersData = [];
+// Mantive sua URL original da planilha
 const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
 
 // --- INICIALIZAÇÃO SEGURA ---
@@ -25,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- LOGICA DE CARREGAMENTO DE DADOS ---
 
 async function carregarDados(testamento) {
-    // Define qual arquivo buscar
     const arquivo = testamento === 'velho' ? './velho.json' : './novo.json';
     
     try {
@@ -33,11 +33,8 @@ async function carregarDados(testamento) {
         if (!res.ok) throw new Error("Não foi possível encontrar o arquivo " + arquivo);
         
         livros = await res.json();
-        
-        // Após carregar, desenha a grade de livros na tela
         renderizarGrade();
         
-        // Garante que a tela de menu esteja visível e a de leitura escondida
         document.getElementById('menu').style.display = 'block';
         document.getElementById('telaLeitura').style.display = 'none';
         window.scrollTo(0, 0);
@@ -47,21 +44,20 @@ async function carregarDados(testamento) {
     }
 }
 
-// Atalho para o logo voltar ao início (carrega todos ou mantém o atual)
 function irParaMenu() {
-    carregarDados('velho'); // Ou uma lógica para voltar ao que estava
+    // Retorna ao menu inicial limpando estados de leitura
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('telaLeitura').style.display = 'none';
+    window.scrollTo(0, 0);
 }
 
-// Troca de testamento via botões do topo
 function filtrarTestamento(tipo) {
     carregarDados(tipo);
 }
 
-// Desenha os botões dos livros
 function renderizarGrade() {
     const grade = document.getElementById('listaLivros');
     if (!grade) return;
-    
     grade.innerHTML = '';
     
     livros.forEach((livro, index) => {
@@ -85,14 +81,12 @@ function abrirSeletorCapitulos(livroIdx) {
     const seletor = document.getElementById('seletorCapitulos');
     const areaTexto = document.getElementById('texto');
     
-    // Título claro antes da grade de números
+    // Limpa e prepara o título de escolha
     seletor.innerHTML = `<h3 class="titulo-selecao">Escolha o Capítulo:</h3>`;
     
-    // Criamos um container para a grade de botões não quebrar o título
     const gradeBotoes = document.createElement('div');
     gradeBotoes.className = "lista-grid";
-    
-    areaTexto.innerHTML = ""; // Limpa o texto anterior
+    areaTexto.innerHTML = ""; 
 
     livro.chapters.forEach((_, capIdx) => {
         const btnCap = document.createElement('button');
@@ -104,7 +98,6 @@ function abrirSeletorCapitulos(livroIdx) {
 
     seletor.appendChild(gradeBotoes);
 
-    // Se o livro só tiver 1 capítulo, carrega direto
     if (livro.chapters.length === 1) {
         carregarCapitulo(livroIdx, 0);
     }
@@ -116,8 +109,7 @@ function carregarCapitulo(livroIdx, capIdx) {
     const seletor = document.getElementById('seletorCapitulos');
     const areaTexto = document.getElementById('texto');
     
-    // Cria a barra superior de navegação do capítulo
-    seletor.className = ""; 
+    // IMPORTANTE: Criamos a estrutura que será fixada pelo CSS
     seletor.innerHTML = `
         <div class="barra-capitulo">
             <span class="label-cap">Capítulo ${capIdx + 1}</span>
@@ -125,35 +117,30 @@ function carregarCapitulo(livroIdx, capIdx) {
         </div>
     `;
 
-    // Monta o texto do capítulo
     const html = livro.chapters[capIdx].map((versiculo, idx) => {
         return `<p class="versiculo"><span class="num-v">${idx + 1}</span>${versiculo}</p>`;
     }).join('');
     
     areaTexto.innerHTML = html;
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth' // Roda suavemente
-    });
+    
+    // Faz a página voltar ao topo para iniciar a leitura
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // --- COMPARTILHAMENTO ---
 
 function compartilharWhatsApp() {
-    // Título e frases compactas
     const linha1 = "📖 *Um presente para você!*";
     const linha2 = "Site da Bíblia com letras grandes e leitura bem simples.";
     const link = window.location.href.split('?')[0];
-    const assinatura = "_Deus abençoe todos nós!_ ✨"; // Itálico e emoji
+    const assinatura = "_Deus abençoe todos nós!_ ✨";
 
-    // Monta a mensagem com quebras de linha (\n)
     const mensagem = `${linha1}\n\n${linha2}\n\n👉 *Acesse aqui:* ${link}\n\n${assinatura}`;
-    
     const linkZap = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
     window.open(linkZap, '_blank');
 }
 
-// --- LOGICA DE OFERTAS (CSV) ---
+// --- LOGICA DE OFERTAS (MANTIDA ORIGINAL) ---
 
 function parseCsvLine(line) {
     const result = [];
@@ -189,18 +176,19 @@ async function fetchOffers() {
 
         if (offersData.length > 0) {
             updateOffer();
-            setInterval(updateOffer, 15000); // Rotaciona a cada 15 segundos
+            setInterval(updateOffer, 15000);
         }
     } catch (e) { 
         console.error("Erro ao carregar ofertas:", e);
-        document.getElementById('loading-ads').innerText = "Fortaleça a sua fé diariamente.";
+        if(document.getElementById('loading-ads')) {
+            document.getElementById('loading-ads').innerText = "Fortaleça a sua fé diariamente.";
+        }
     }
 }
 
 function updateOffer() {
     if (offersData.length === 0) return;
     const ad = offersData[Math.floor(Math.random() * offersData.length)];
-    
     const loading = document.getElementById('loading-ads');
     const link = document.getElementById('content-link');
     
