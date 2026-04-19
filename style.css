@@ -19,9 +19,13 @@ body {
 header {
     position: sticky;
     top: 0;
-    height: 75px; /* Certifique-se de que a altura seja fixa */
-    z-index: 1000;
-    background: var(--bg); /* Fundo sólido é essencial */
+    height: 80px; /* Altura fixa para evitar quebras */
+    background-color: var(--bg);
+    z-index: 1001; /* Maior de todos */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid var(--border);
 }
 
 .header-left { display: flex; align-items: center; gap: 6px; }
@@ -90,15 +94,16 @@ header {
 .leitura { display: none; }
 
 .header-leitura {
+    position: sticky;
+    top: 80px; /* Gruda exatamente após os 80px do header */
+    height: 50px;
+    background-color: #ffffff;
+    z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;
-    background: #ffffff; /* Fundo branco sólido para não ver o texto atrás */
+    padding: 0 15px;
     border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 75px; /* Gruda exatamente onde termina o header principal */
-    z-index: 999;
 }
 
 #nomeLivro { margin: 0; font-size: 1.6rem; color: var(--primary); font-family: 'Lora', serif; }
@@ -125,16 +130,16 @@ header {
 }
 
 .barra-capitulo {
+    position: sticky;
+    top: 130px; /* 80px do header + 50px da header-leitura */
+    height: 50px;
+    background-color: #fff8f0;
+    z-index: 999;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff8f0; /* Tom palha para diferenciar */
-    padding: 10px 15px;
+    padding: 0 15px;
     border-bottom: 2px solid var(--border);
-    position: sticky;
-    top: 121px; /* 75px (header) + 46px (altura aprox. da header-leitura) */
-    z-index: 998;
-    margin-bottom: 10px;
 }
 
 .label-cap { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
@@ -149,6 +154,8 @@ header {
     font-family: 'Lora', serif;
     font-size: 20px;
     line-height: 1.8;
+    padding: 20px 15px;
+    margin-top: 10px;
 }
 
 .versiculo { display: block; margin-bottom: 18px; }
