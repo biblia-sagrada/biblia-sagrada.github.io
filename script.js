@@ -212,3 +212,19 @@ function updateOffer() {
         };
     }
 }
+
+function abrirInfo() {
+    document.getElementById('modalInfo').style.display = "block";
+}
+
+function fecharInfo() {
+    document.getElementById('modalInfo').style.display = "none";
+}
+
+// Fecha se o usuário clicar fora da caixinha branca
+window.onclick = function(event) {
+    const modal = document.getElementById('modalInfo');
+    if (event.target == modal) {
+        fecharInfo();
+    }
+}
