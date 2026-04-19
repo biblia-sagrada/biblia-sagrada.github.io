@@ -192,9 +192,20 @@ header {
 #content-area.collapsed { height: 35px; }
 
 #collapse-button {
-    position: absolute; top: -12px; right: 15px; background: var(--accent);
-    color: white; border-radius: 50%; width: 26px; height: 26px;
-    border: 2px solid #fff; cursor: pointer;
+    position: relative; /* Mudamos de absolute para relative para respeitar o flex */
+    top: 0; 
+    right: 0;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    border: 2px solid #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Impede o botão de amassar */
 }
 .content-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
 
@@ -249,18 +260,24 @@ header {
 /* Posicionamento do link discreto */
 .ads-header-info {
     position: absolute;
-    top: 5px;
-    right: 50px; /* Dá espaço para o botão ▼ */
+    top: -12px; /* Alinhado com a altura que o botão já tinha */
+    right: 10px;
     display: flex;
     align-items: center;
+    gap: 15px; /* Espaço de segurança entre o link e o botão */
+    z-index: 2100;
 }
-
 .link-ajuda {
     font-size: 0.65rem;
-    color: #a1887f;
-    text-decoration: underline;
+    color: #ffffff; /* Branco para contrastar se estiver sobre o botão, ou var(--accent) se estiver fora */
+    background: var(--accent); /* Um fundo sutil ajuda a não sumir na imagem da oferta */
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-decoration: none;
     cursor: pointer;
     font-style: italic;
+    white-space: nowrap; /* Impede que o texto quebre em duas linhas */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Estilo do Modal (Fundo escurecido) */
