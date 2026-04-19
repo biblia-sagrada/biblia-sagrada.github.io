@@ -180,7 +180,17 @@ header {
     border: 2px solid #fff; cursor: pointer;
 }
 
-.content-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: inherit; }
+.content-wrapper { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; /* Centraliza horizontalmente */
+    gap: 15px; 
+    padding: 12px; 
+    text-decoration: none; 
+    color: inherit;
+    max-width: 600px; /* Limita a largura para não espalhar demais em telas grandes */
+    margin: 0 auto;  /* Centraliza o bloco todo na tela */
+}
 
 .content-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
 
