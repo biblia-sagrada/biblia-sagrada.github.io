@@ -188,16 +188,27 @@ async function fetchOffers() {
 
 function updateOffer() {
     if (offersData.length === 0) return;
+    
+    // Sorteia uma oferta
     const ad = offersData[Math.floor(Math.random() * offersData.length)];
+    
     const loading = document.getElementById('loading-ads');
     const link = document.getElementById('content-link');
+    const img = document.getElementById('content-image');
     
-    if (loading) loading.style.display = 'none';
-    if (link) {
-        link.classList.remove('hidden');
-        link.href = ad['Offer_Link'] || "#";
-        document.getElementById('content-image').src = ad['img'] || "";
+    // Só prossegue se houver uma imagem válida no dado sorteado
+    if (ad['img'] && ad['img'].length > 10) {
+        // 1. Alimenta os dados
+        img.src = ad['img'];
         document.getElementById('content-title').innerText = ad['Item_Name'] || "";
         document.getElementById('offer-description').innerText = ad['Description'] || "";
+        link.href = ad['Offer_Link'] || "#";
+
+        // 2. Quando a imagem terminar de carregar de fato
+        img.onload = () => {
+            if (loading) loading.style.display = 'none'; // Esconde o texto de espera
+            link.classList.remove('hidden'); // Mostra a oferta montada
+            img.style.display = 'block'; // Garante que a imagem apareça
+        };
     }
 }
