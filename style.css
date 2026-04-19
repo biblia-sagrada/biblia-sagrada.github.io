@@ -97,10 +97,10 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px;
-    background: var(--bg); /* Cor do fundo para não ficar transparente */
+    background: #ffffff; /* Fundo branco sólido essencial */
     border-bottom: 1px solid var(--border);
     position: sticky;
-    top: 75px; /* Fica logo abaixo do header principal (que tem 75px-80px) */
+    top: 80px;      /* EXATO: Logo abaixo do header principal de 80px */
     z-index: 998;
 }
 
@@ -131,14 +131,14 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff8f0; /* Um tom levemente diferente para destacar */
+    background: #fff8f0; 
     padding: 10px 15px;
     border-bottom: 2px solid var(--border);
     position: sticky;
-    top: 132px; /* Fica logo abaixo do nome do livro */
+    top: 131px;     /* EXATO: 80px (header) + 51px (altura da header-leitura) */
     z-index: 997;
     margin-bottom: 20px;
-    box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); /* Sombra sutil para dar profundidade */
+    box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1);
 }
 
 .label-cap { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
@@ -165,11 +165,26 @@ header {
 }
 
 /* --- Publicidade --- */
+
+/* --- Publicidade Centralizada --- */
 #content-area {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: var(--white); border-top: 3px solid var(--accent);
-    z-index: 2000; height: 110px; transition: height 0.3s; overflow: hidden;
+    z-index: 2000; transition: height 0.3s; overflow: hidden;
     height: 95px;
+    display: flex;         /* Novo: Ativa flexbox */
+    justify-content: center; /* Novo: Centraliza no desktop */
+}
+
+.content-wrapper { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    padding: 12px; 
+    text-decoration: none; 
+    color: inherit;
+    width: 100%;           /* Novo: Garante preenchimento */
+    max-width: 700px;      /* Novo: Alinha com a largura do conteúdo da Bíblia */
 }
 
 #content-area.collapsed { height: 35px; }
@@ -179,9 +194,6 @@ header {
     color: white; border-radius: 50%; width: 26px; height: 26px;
     border: 2px solid #fff; cursor: pointer;
 }
-
-.content-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: inherit; }
-
 .content-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
 
 .loading-state { text-align: center; padding: 40px; font-size: 0.8rem; color: #a1887f; }
