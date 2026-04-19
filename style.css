@@ -17,22 +17,47 @@ body {
 
 /* --- Cabeçalho --- */
 header { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 0 8px; background: var(--white); border-bottom: 2px solid var(--border);
-    position: sticky; top: 0; z-index: 1000; height: 75px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 8px; 
+    background: #fff; 
+    border-bottom: 2px solid var(--border);
+    position: sticky; top: 0; z-index: 1000; 
+    height: 80px; /* Aumentei levemente para as 3 linhas de texto respirarem */
 }
 
 .header-left { display: flex; align-items: center; gap: 6px; }
 
-.logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; }
+.logo-img { 
+    height: 42px; 
+    width: 42px; 
+    border-radius: 8px; 
+    object-fit: cover; 
+}
 
 .logo-text { display: flex; flex-direction: column; line-height: 1; }
 
-.title-biblia { font-size: 0.9rem; font-weight: 900; color: var(--primary); }
+.title-biblia { 
+    font-size: 0.95rem; 
+    font-weight: 900; 
+    color: var(--primary); 
+    letter-spacing: 0.5px;
+}
 
 .subtitle-biblia { 
-    font-size: 0.75rem; color: #a1887f; font-weight: 400;
-    letter-spacing: 1px; line-height: 1.5; 
+    font-size: 0.8rem; 
+    color: #a1887f; 
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.tagline-biblia { 
+    font-size: 0.6rem; /* Fonte pequena e discreta */
+    color: #a1887f; 
+    font-weight: 400;
+    font-style: italic; /* Itálico dá um charme de "frase de efeito" */
+    line-height: 1.5; /* O ajuste que você gostou */
 }
 
 .btn-testamento {
