@@ -131,7 +131,10 @@ function carregarCapitulo(livroIdx, capIdx) {
     }).join('');
     
     areaTexto.innerHTML = html;
-    window.scrollTo(0, 0);
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Roda suavemente
+    });
 }
 
 // --- COMPARTILHAMENTO ---
