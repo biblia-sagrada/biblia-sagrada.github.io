@@ -1,285 +1,110 @@
-/* ==========================================================================
-   1. IMPORTAÇÃO E VARIÁVEIS (Fontes: Inter para UI e Lora para Bíblia)
-   ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
 
 :root {
-    --primary-color: #5d4037;    /* Marrom escuro bíblico */
-    --accent-color: #5147e6;     /* Azul da publicidade/botões */
-    --bg-color: #f8f5f0;         /* Creme suave (estilo papel antigo) */
-    --border-color: #e0d9c1;     /* Bege para divisórias */
-    --text-main: #2c2c2c;
-    --text-bible: #3e2723;
-    --text-muted: #a1887f;
+    --primary: #5d4037;
+    --accent: #5147e6;
+    --bg: #f8f5f0;
+    --border: #e0d9c1;
+    --white: #ffffff;
 }
 
-/* ==========================================================================
-   2. RESET E ESTRUTURA GERAL
-   ========================================================================== */
 body { 
-    background-color: var(--bg-color); 
-    color: var(--text-main); 
+    background-color: var(--bg); 
+    color: #2c2c2c; 
     font-family: 'Inter', sans-serif; 
-    margin: 0; 
-    padding: 0; 
-    overflow-x: hidden;
+    margin: 0; padding: 0; 
 }
 
-.container { 
-    max-width: 700px; 
-    margin: 0 auto; 
-    padding: 20px 15px 160px 15px; /* Padding bottom extra para o rodapé */
-}
-
-/* ==========================================================================
-   3. CABEÇALHO (Compacto e Direto)
-   ========================================================================== */
+/* --- Cabeçalho --- */
 header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 8px; 
-    background: #fff; 
-    border-bottom: 2px solid var(--border-color);
-    position: sticky; top: 0; z-index: 1000; 
-    height: 75px; /* Aumentei um pouco a altura para caber o botão de 2 linhas */
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 0 8px; background: var(--white); border-bottom: 2px solid var(--border);
+    position: sticky; top: 0; z-index: 1000; height: 75px;
 }
 
-.header-left { 
-    display: flex; 
-    align-items: center; 
-    gap: 6px; 
-}
+.header-left { display: flex; align-items: center; gap: 6px; }
 
-.logo-img { 
-    height: 35px; 
-    width: 35px; 
-    border-radius: 6px; 
-    object-fit: cover; 
-}
+.logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; }
 
-.logo-text { 
-    display: flex; 
-    flex-direction: column; 
-    line-height: 0.85; 
-}
+.logo-text { display: flex; flex-direction: column; line-height: 1; }
 
-.title-biblia { 
-    font-size: 0.9rem; 
-    font-weight: 900; 
-    color: var(--primary-color); 
-}
+.title-biblia { font-size: 0.9rem; font-weight: 900; color: var(--primary); }
 
 .subtitle-biblia { 
-    font-size: 0.75rem; 
-    color: var(--text-muted); 
-    font-weight: 400;
-    letter-spacing: 1px;
-    line-height: 1.5;
-}
-
-/* Botões de Testamento no Topo */
-.header-nav { 
-    display: flex; 
-    gap: 4px; 
+    font-size: 0.75rem; color: #a1887f; font-weight: 400;
+    letter-spacing: 1px; line-height: 1.5; 
 }
 
 .btn-testamento {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-size: 0.75rem; /* Fonte ajustada */
-    font-weight: bold;
-    line-height: 1.1; /* Texto mais juntinho */
-    text-align: center;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 85px; /* Garante um tamanho bom para o toque */
+    background: var(--primary); color: white; border: none;
+    padding: 5px 10px; border-radius: 8px; font-size: 0.72rem;
+    font-weight: bold; line-height: 1.1; text-align: center;
+    cursor: pointer; min-width: 85px;
 }
 
-.btn-testamento:active { 
-    background: #3e2723; 
-}
+/* --- Container e Grades --- */
+.container { max-width: 700px; margin: 0 auto; padding: 20px 15px 160px 15px; }
 
-/* ==========================================================================
-   4. ÍNDICE DE LIVROS E CAPÍTULOS
-   ========================================================================== */
-.lista-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
-    gap: 10px; 
-}
+.lista-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
 
 .btn-livro { 
-    background: #ffffff; 
-    border: 1px solid var(--border-color); 
-    padding: 15px 5px; 
-    border-radius: 12px; 
-    font-size: 14px; 
-    font-weight: 700; 
-    color: var(--primary-color);
-    cursor: pointer; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.1s;
+    background: var(--white); border: 1px solid var(--border); padding: 15px 5px; 
+    border-radius: 12px; font-size: 14px; font-weight: 700; color: var(--primary);
+    cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.btn-livro:active { 
-    transform: scale(0.95);
-    background-color: #fdfdfd;
+/* --- Área de Leitura --- */
+.leitura { display: none; }
+
+.header-leitura {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
 }
 
-/* ==========================================================================
-   5. ÁREA DE LEITURA (Foco no Idoso)
-   ========================================================================== */
-.leitura { 
-    display: none; 
-}
-
-#nomeLivro { 
-    text-align: center; 
-    color: var(--primary-color); 
-    font-size: 1.8rem; 
-    margin-bottom: 20px; 
-    font-family: 'Lora', serif;
-}
-
-#texto { 
-    font-family: 'Lora', serif; 
-    font-size: 20px; 
-    line-height: 1.8; 
-    text-align: left; 
-    color: var(--text-bible); 
-}
-
-/* Versículos como parágrafos separados */
-.versiculo { 
-    display: block; 
-    margin-bottom: 18px; 
-}
-
-.num-v { 
-    font-family: 'Inter', sans-serif;
-    font-size: 0.6em; 
-    font-weight: 800; 
-    color: var(--text-muted); 
-    vertical-align: super; 
-    margin-right: 8px; 
-}
+#nomeLivro { margin: 0; font-size: 1.6rem; color: var(--primary); font-family: 'Lora', serif; }
 
 .btn-whatsapp {
-    background-color: #25d366;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    background-color: #25d366; color: white; border: none;
+    padding: 6px 12px; border-radius: 15px; font-size: 0.75rem;
+    font-weight: bold; display: flex; align-items: center; gap: 5px; cursor: pointer;
 }
 
-.btn-whatsapp:active {
-    transform: scale(0.9);
-    background-color: #128c7e;
+.barra-capitulo {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fdfaf5; padding: 8px 12px; border-radius: 8px;
+    border: 1px solid var(--border); margin-bottom: 25px;
 }
 
-/* Ajuste para o título não ocupar a linha toda se o botão estiver ao lado */
-.flex.justify-between.items-center {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 10px;
+.label-cap { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
+
+.btn-trocar-cap {
+    background: var(--border); color: var(--primary); border: none;
+    padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold;
 }
 
-/* ==========================================================================
-   6. PUBLICIDADE (Rodapé Inteligente)
-   ========================================================================== */
+#texto { font-family: 'Lora', serif; font-size: 20px; line-height: 1.8; color: #3e2723; }
+
+.versiculo { display: block; margin-bottom: 18px; }
+
+.num-v { font-size: 0.6em; font-weight: 800; color: #a1887f; vertical-align: super; margin-right: 8px; }
+
+/* --- Publicidade --- */
 #content-area {
-    position: fixed; 
-    bottom: 0; left: 0; right: 0;
-    background: #ffffff; 
-    border-top: 3px solid var(--accent-color);
-    z-index: 2000; 
-    height: 110px; /* Altura normal */
-    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden; /* ESSENCIAL: impede o texto de vazar ao recolher */
-    box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white); border-top: 3px solid var(--accent);
+    z-index: 2000; height: 110px; transition: height 0.3s; overflow: hidden;
 }
 
-/* Estado Recolhido */
-#content-area.collapsed { 
-    height: 35px; 
-}
+#content-area.collapsed { height: 35px; }
 
 #collapse-button {
-    position: absolute;
-    top: -12px;
-    right: 15px;
-    background: var(--accent-color);
-    color: white;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    border: 2px solid #fff;
-    cursor: pointer;
-    z-index: 2100;
+    position: absolute; top: -12px; right: 15px; background: var(--accent);
+    color: white; border-radius: 50%; width: 26px; height: 26px;
+    border: 2px solid #fff; cursor: pointer;
 }
 
-.content-wrapper { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    padding: 12px; 
-    text-decoration: none; 
-    color: inherit; 
-}
+.content-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: inherit; }
 
-.content-image { 
-    width: 80px; 
-    height: 80px; 
-    object-fit: cover; 
-    border-radius: 8px; 
-    flex-shrink: 0; 
-}
+.content-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
 
-#content-title {
-    font-size: 0.9rem; 
-    font-weight: bold; 
-    color: var(--accent-color); 
-    line-height: 1.2;
-    display: -webkit-box; 
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical;
-    overflow: hidden; 
-    margin-bottom: 3px;
-}
-
-#offer-description {
-    font-size: 0.8rem; 
-    color: #4b5563; 
-    line-height: 1.2;
-    display: -webkit-box; 
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.loading-state {
-    text-align: center;
-    padding: 40px 10px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
+.loading-state { text-align: center; padding: 40px; font-size: 0.8rem; color: #a1887f; }
