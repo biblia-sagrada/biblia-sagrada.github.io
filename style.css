@@ -23,8 +23,10 @@ header {
     padding: 0 8px; 
     background: #fff; 
     border-bottom: 2px solid var(--border);
-    position: sticky; top: 0; z-index: 1000; 
-    height: 80px; /* Aumentei levemente para as 3 linhas de texto respirarem */
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+    height: 80px; /* Altura fixa para o cálculo funcionar */
 }
 
 .header-left { display: flex; align-items: center; gap: 6px; }
@@ -97,11 +99,11 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px;
-    background: #ffffff; /* Fundo branco sólido essencial */
+    background: #ffffff; /* Fundo branco sólido para não ficar transparente */
     border-bottom: 1px solid var(--border);
     position: sticky;
-    top: 80px;      /* EXATO: Logo abaixo do header principal de 80px */
-    z-index: 998;
+    top: 80px;      /* EXATO: Gruda onde termina o header principal */
+    z-index: 999;   /* Z-index alto para ficar sobre o texto */
 }
 
 #nomeLivro { margin: 0; font-size: 1.6rem; color: var(--primary); font-family: 'Lora', serif; }
@@ -136,7 +138,7 @@ header {
     border-bottom: 2px solid var(--border);
     position: sticky;
     top: 131px;     /* EXATO: 80px (header) + 51px (altura da header-leitura) */
-    z-index: 997;
+    z-index: 998;
     margin-bottom: 20px;
     box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1);
 }
