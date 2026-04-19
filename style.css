@@ -16,15 +16,12 @@ body {
 }
 
 /* --- Cabeçalho --- */
-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 8px; 
-    background: #fff; 
-    border-bottom: 2px solid var(--border);
-    position: sticky; top: 0; z-index: 1000; 
-    height: 80px; /* Aumentei levemente para as 3 linhas de texto respirarem */
+header {
+    position: sticky;
+    top: 0;
+    height: 75px; /* Certifique-se de que a altura seja fixa */
+    z-index: 1000;
+    background: var(--bg); /* Fundo sólido é essencial */
 }
 
 .header-left { display: flex; align-items: center; gap: 6px; }
@@ -97,11 +94,11 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px;
-    background: var(--bg);
+    background: #ffffff; /* Fundo branco sólido para não ver o texto atrás */
     border-bottom: 1px solid var(--border);
     position: sticky;
-    top: 75px; /* Ajuste este valor se o seu header for mais alto ou baixo */
-    z-index: 998;
+    top: 75px; /* Gruda exatamente onde termina o header principal */
+    z-index: 999;
 }
 
 #nomeLivro { margin: 0; font-size: 1.6rem; color: var(--primary); font-family: 'Lora', serif; }
@@ -131,14 +128,13 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff8f0; 
+    background: #fff8f0; /* Tom palha para diferenciar */
     padding: 10px 15px;
     border-bottom: 2px solid var(--border);
     position: sticky;
-    top: 131px; /* Soma do Header (75px) + Header Leitura (~56px) */
-    z-index: 997;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1);
+    top: 121px; /* 75px (header) + 46px (altura aprox. da header-leitura) */
+    z-index: 998;
+    margin-bottom: 10px;
 }
 
 .label-cap { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
