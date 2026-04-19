@@ -133,6 +133,7 @@ header {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: var(--white); border-top: 3px solid var(--accent);
     z-index: 2000; height: 110px; transition: height 0.3s; overflow: hidden;
+    height: 95px;
 }
 
 #content-area.collapsed { height: 35px; }
