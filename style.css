@@ -260,7 +260,7 @@ header {
 /* Posicionamento do link discreto */
 .ads-header-info {
     position: absolute;
-    top: -12px; /* Alinhado com a altura que o botão já tinha */
+    top: -7px; 
     right: 10px;
     display: flex;
     align-items: center;
