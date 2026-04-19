@@ -4,12 +4,52 @@ const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7
 
 const livrosNovoTestamento = ["Mateus", "Marcos", "Lucas", "João", "Atos", "Romanos", "1 Coríntios", "2 Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", "1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "2 Timóteo", "Tito", "Filemom", "Hebreus", "Tiago", "1 Pedro", "2 Pedro", "1 João", "2 João", "3 João", "Judas", "Apocalipse"];
 
-fetch('./biblia.json')
-    .then(res => res.json())
-    .then(data => { livros = data; renderizarMenu(); });
+// Função para processar CSV com segurança (lidando com aspas e vírgulas)
+function parseCsvLine(line) {
+    const result = [];
+    let inQuote = false;
+    let currentField = '';
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') inQuote = !inQuote;
+        else if (char === ',' && !inQuote) {
+            result.push(currentField.trim());
+            currentField = '';
+        } else currentField += char;
+    }
+    result.push(currentField.trim());
+    return result;
+}
+
+// Inicialização segura
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Carregar Bíblia
+    fetch('./biblia.json')
+        .then(res => res.json())
+        .then(data => {
+            livros = data;
+            filtrarTestamento('todos'); // Força a exibição inicial
+        })
+        .catch(err => console.error("Erro ao carregar Bíblia:", err));
+
+    // 2. Carregar Ofertas
+    fetchOffers();
+
+    // 3. Configurar botão de colapsar
+    const collapseBtn = document.getElementById('collapse-button');
+    if (collapseBtn) {
+        collapseBtn.onclick = () => {
+            const area = document.getElementById('content-area');
+            area.classList.toggle('collapsed');
+            collapseBtn.innerText = area.classList.contains('collapsed') ? '▲' : '▼';
+        };
+    }
+});
 
 function filtrarTestamento(tipo) {
     const grade = document.getElementById('listaLivros');
+    if (!grade) return;
+    
     document.getElementById('menu').style.display = 'block';
     document.getElementById('telaLeitura').style.display = 'none';
     grade.innerHTML = '';
@@ -76,37 +116,41 @@ function compartilharWhatsApp() {
     window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
 }
 
-// Lógica de Ofertas (Simplificada)
 async function fetchOffers() {
     try {
         const res = await fetch(OFFERS_CSV_URL);
         const text = await res.text();
-        const lines = text.split('\n').slice(1);
-        offersData = lines.map(line => {
-            const parts = line.split(',');
-            return { name: parts[0], img: parts[1], link: parts[2], desc: parts[3] };
-        }).filter(o => o.img);
-        if(offersData.length) updateOffer();
-    } catch (e) {}
+        const lines = text.split('\n').filter(l => l.trim() !== '');
+        const headers = parseCsvLine(lines[0]);
+        
+        offersData = lines.slice(1).map(line => {
+            const values = parseCsvLine(line);
+            const row = {};
+            headers.forEach((h, idx) => {
+                row[h.trim()] = values[idx] ? values[idx].replace(/^"|"$/g, '') : '';
+            });
+            return row;
+        }).filter(o => o.img && o.img.length > 10);
+
+        if(offersData.length) {
+            updateOffer();
+            setInterval(updateOffer, 15000);
+        }
+    } catch (e) { console.error("Erro ofertas:", e); }
 }
 
 function updateOffer() {
+    if (!offersData.length) return;
     const ad = offersData[Math.floor(Math.random()*offersData.length)];
-    document.getElementById('loading-ads').classList.add('hidden');
+    const loading = document.getElementById('loading-ads');
     const link = document.getElementById('content-link');
-    link.classList.remove('hidden');
-    link.href = ad.link;
-    document.getElementById('content-image').src = ad.img;
-    document.getElementById('content-title').innerText = ad.name;
-    document.getElementById('offer-description').innerText = ad.desc || "";
+    
+    if (loading) loading.style.display = 'none';
+    if (link) {
+        link.classList.remove('hidden');
+        link.href = ad['Offer_Link'] || "#";
+        document.getElementById('content-image').src = ad['img'];
+        document.getElementById('content-title').innerText = ad['Item_Name'];
+        document.getElementById('offer-description').innerText = ad['Description'] || "";
+    }
 }
-
-window.onload = () => {
-    fetchOffers();
-    setInterval(updateOffer, 15000);
-    document.getElementById('collapse-button').onclick = () => {
-        const area = document.getElementById('content-area');
-        area.classList.toggle('collapsed');
-        document.getElementById('collapse-button').innerText = area.classList.contains('collapsed') ? '▲' : '▼';
-    };
-};
