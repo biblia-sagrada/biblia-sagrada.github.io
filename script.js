@@ -130,14 +130,16 @@ function carregarCapitulo(livroIdx, capIdx) {
 // --- COMPARTILHAMENTO ---
 
 function compartilharWhatsApp() {
-    const titulo = document.getElementById('nomeLivro').innerText;
-    const capituloTexto = document.querySelector('.label-cap')?.innerText || "";
-    const textoBiblia = document.getElementById('texto').innerText;
-    const urlApp = window.location.href;
+    // Título que aparecerá no WhatsApp
+    const tituloApp = "📖 *Bíblia Sagrada - Fácil de Ler*";
+    const fraseConvite = "Olá! Gostaria de compartilhar com você este site para leitura da Bíblia. É muito simples de usar e as letras são grandes.";
+    const linkApp = window.location.href.split('?')[0]; // Pega a home do site
 
-    const mensagem = `📖 *${titulo} - ${capituloTexto}*\n\n${textoBiblia}\n\nLido em: ${urlApp}`;
-    const linkZap = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+    // Monta a mensagem final
+    const mensagem = `${tituloApp}\n\n${fraseConvite}\n\n👉 Acesse aqui: ${linkApp}`;
     
+    // Codifica e abre o WhatsApp
+    const linkZap = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
     window.open(linkZap, '_blank');
 }
 
