@@ -93,8 +93,15 @@ header {
 .leitura { display: none; }
 
 .header-leitura {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--bg); /* Cor do fundo para não ficar transparente */
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 75px; /* Fica logo abaixo do header principal (que tem 75px-80px) */
+    z-index: 998;
 }
 
 #nomeLivro { margin: 0; font-size: 1.6rem; color: var(--primary); font-family: 'Lora', serif; }
@@ -121,9 +128,17 @@ header {
 }
 
 .barra-capitulo {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #fdfaf5; padding: 8px 12px; border-radius: 8px;
-    border: 1px solid var(--border); margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff8f0; /* Um tom levemente diferente para destacar */
+    padding: 10px 15px;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 132px; /* Fica logo abaixo do nome do livro */
+    z-index: 997;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); /* Sombra sutil para dar profundidade */
 }
 
 .label-cap { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
@@ -133,11 +148,21 @@ header {
     padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold;
 }
 
-#texto { font-family: 'Lora', serif; font-size: 20px; line-height: 1.8; color: #3e2723; }
+#texto {
+    padding-top: 10px;
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    line-height: 1.8;
+}
 
 .versiculo { display: block; margin-bottom: 18px; }
 
 .num-v { font-size: 0.6em; font-weight: 800; color: #a1887f; vertical-align: super; margin-right: 8px; }
+
+#telaLeitura {
+    display: none;
+    position: relative;
+}
 
 /* --- Publicidade --- */
 #content-area {
