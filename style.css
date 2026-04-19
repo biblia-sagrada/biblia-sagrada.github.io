@@ -96,7 +96,7 @@ header {
 
 .topo-fixo-leitura {
     position: sticky;
-    top: 80px; 
+    top: 81px; 
     z-index: 1000;
     background-color: transparent; /* Removemos o branco daqui */
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
