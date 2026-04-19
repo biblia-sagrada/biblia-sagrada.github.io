@@ -85,19 +85,26 @@ function abrirSeletorCapitulos(livroIdx) {
     const seletor = document.getElementById('seletorCapitulos');
     const areaTexto = document.getElementById('texto');
     
-    seletor.className = "lista-grid";
-    seletor.innerHTML = '';
-    areaTexto.innerHTML = `<p style="text-align:center; color:#a1887f; margin-top:20px;">Toque no número do capítulo:</p>`;
+    // Título claro antes da grade de números
+    seletor.innerHTML = `<h3 class="titulo-selecao">Escolha o Capítulo:</h3>`;
+    
+    // Criamos um container para a grade de botões não quebrar o título
+    const gradeBotoes = document.createElement('div');
+    gradeBotoes.className = "lista-grid";
+    
+    areaTexto.innerHTML = ""; // Limpa o texto anterior
 
     livro.chapters.forEach((_, capIdx) => {
         const btnCap = document.createElement('button');
         btnCap.className = 'btn-livro';
         btnCap.innerText = capIdx + 1;
         btnCap.onclick = () => carregarCapitulo(livroIdx, capIdx);
-        seletor.appendChild(btnCap);
+        gradeBotoes.appendChild(btnCap);
     });
 
-    // Se o livro só tiver 1 capítulo (ex: Obadias), carrega direto
+    seletor.appendChild(gradeBotoes);
+
+    // Se o livro só tiver 1 capítulo, carrega direto
     if (livro.chapters.length === 1) {
         carregarCapitulo(livroIdx, 0);
     }
