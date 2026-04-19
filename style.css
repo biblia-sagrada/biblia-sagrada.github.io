@@ -75,6 +75,7 @@ header {
     color: var(--text-muted); 
     font-weight: 400;
     letter-spacing: 1px;
+    line-height: 1.5;
 }
 
 /* Botões de Testamento no Topo */
