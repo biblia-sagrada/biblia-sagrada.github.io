@@ -45,6 +45,7 @@ header {
     font-weight: 900; 
     color: var(--primary); 
     letter-spacing: 0.5px;
+    margin: 0;
 }
 
 .subtitle-biblia { 
@@ -52,6 +53,7 @@ header {
     color: #a1887f; 
     font-weight: 700;
     letter-spacing: 1px;
+    padding: 0;
 }
 
 .tagline-biblia { 
