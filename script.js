@@ -6,23 +6,42 @@ let offersData = [];
 
 async function fetchOffers() {
     try {
-        console.log("Iniciando busca do XML Colab55...");
-        const response = await fetch('./c55_palavraquefortifica.xml');
-        if (!response.ok) throw new Error("Erro ao carregar arquivo XML");
+        console.log("Iniciando busca do XML (Modo Blindado)...");
+        
+        // Adicionamos um carimbo de tempo (?t=...) para forçar o navegador a pegar o arquivo novo
+        const response = await fetch('./c55_palavraquefortifica.xml?t=' + new Date().getTime(), {
+            cache: "no-store"
+        });
+        
+        if (!response.ok) throw new Error("Não foi possível acessar o arquivo XML.");
         
         const str = await response.text();
+        
+        // Se o XML veio vazio por algum motivo, paramos aqui
+        if (str.length < 100) {
+            console.error("O arquivo XML parece estar vazio ou mal formatado.");
+            return;
+        }
+
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(str, "text/xml");
         const items = xmlDoc.querySelectorAll("item");
 
         offersData = Array.from(items).map(item => {
+            // Pegamos o HTML bruto do item para garantir que nada escape do Regex
             const itemStr = new XMLSerializer().serializeToString(item);
             
-            // Extrator robusto para tags g:image_link, g:price, etc.
             const extract = (tag) => {
+                // Regex melhorada para pegar conteúdo mesmo com quebras de linha
                 const regex = new RegExp(`<([^> ]*:)?${tag}[^>]*>([^]*?)<\\/\\1?${tag}>`, 'i');
                 const match = itemStr.match(regex);
-                return match ? match[2].trim().replace('<![CDATA[', '').replace(']]>', '') : "";
+                if (match) {
+                    return match[2]
+                        .replace(/<!\[CDATA\[/g, '')
+                        .replace(/\]\]>/g, '')
+                        .trim();
+                }
+                return "";
             };
 
             let price = extract("price");
@@ -37,17 +56,19 @@ async function fetchOffers() {
                 img: extract("image_link"),
                 price: price
             };
-        }).filter(ad => ad.img !== "");
+        }).filter(ad => ad.img && ad.img.includes('http')); // Só aceita se tiver um link de imagem válido
 
-        console.log("Produtos processados:", offersData.length);
+        console.log("Sucesso! Produtos processados:", offersData.length);
 
         if (offersData.length > 0) {
             updateOffer();
+        } else {
+            console.warn("Nenhum link de imagem foi encontrado dentro das tags do XML.");
+            if(document.getElementById('loading-ads')) document.getElementById('loading-ads').style.display = 'none';
         }
     } catch (err) {
-        console.error("Erro na função fetchOffers:", err);
-        const loading = document.getElementById('loading-ads');
-        if (loading) loading.style.display = 'none';
+        console.error("Erro Crítico na busca:", err);
+        if(document.getElementById('loading-ads')) document.getElementById('loading-ads').style.display = 'none';
     }
 }
 
