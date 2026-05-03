@@ -1,6 +1,90 @@
-// --- VARIÁVEIS GLOBAIS ---
+// 1. Declaramos a variável globalmente no topo
 let livros = [];
 let offersData = [];
+
+// 2. Definimos a função fetchOffers (ela DEVE estar fora de qualquer outra função)
+async function fetchOffers() {
+    try {
+        console.log("Iniciando busca do XML...");
+        const response = await fetch('./c55_palavraquefortifica.xml');
+        if (!response.ok) throw new Error("Erro ao carregar arquivo XML");
+        
+        const str = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(str, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
+
+        offersData = Array.from(items).map(item => {
+            const itemStr = new XMLSerializer().serializeToString(item);
+            
+            // Extrator robusto para tags g:image_link, g:price, etc.
+            const extract = (tag) => {
+                const regex = new RegExp(`<([^> ]*:)?${tag}[^>]*>([^]*?)<\\/\\1?${tag}>`, 'i');
+                const match = itemStr.match(regex);
+                return match ? match[2].trim().replace('<![CDATA[', '').replace(']]>', '') : "";
+            };
+
+            let price = extract("price");
+            if (price) {
+                const num = price.replace(/[a-zA-Z]/g, '').trim();
+                price = "R$ " + num.replace('.', ',');
+            }
+
+            return {
+                title: item.querySelector("title")?.textContent || "Arte Cristã",
+                link: item.querySelector("link")?.textContent || "#",
+                img: extract("image_link"),
+                price: price
+            };
+        }).filter(ad => ad.img !== "");
+
+        console.log("Produtos processados:", offersData.length);
+
+        if (offersData.length > 0) {
+            updateOffer();
+        }
+    } catch (err) {
+        console.error("Erro na função fetchOffers:", err);
+        const loading = document.getElementById('loading-ads');
+        if (loading) loading.style.display = 'none';
+    }
+}
+
+// 3. Função para atualizar a interface
+function updateOffer() {
+    if (offersData.length === 0) return;
+    
+    const ad = offersData[Math.floor(Math.random() * offersData.length)];
+    const loading = document.getElementById('loading-ads');
+    const link = document.getElementById('content-link');
+    const img = document.getElementById('content-image');
+    const title = document.getElementById('content-title');
+    const priceDisplay = document.getElementById('offer-price');
+
+    if (link && img) {
+        img.src = ad.img;
+        title.innerText = ad.title;
+        link.href = ad.link;
+        if (priceDisplay) priceDisplay.innerText = ad.price;
+
+        if (loading) loading.style.display = 'none';
+        link.classList.remove('hidden');
+        link.style.display = 'flex'; // Força a exibição
+    }
+}
+
+// 4. O GATILHO: Chama as funções quando a página carregar
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Página carregada, chamando fetchOffers...");
+    
+    // Verifica se a função existe antes de chamar para evitar o erro de ReferenceError
+    if (typeof fetchOffers === "function") {
+        fetchOffers();
+    } else {
+        console.error("Erro: A função fetchOffers não foi encontrada no carregamento.");
+    }
+
+    
 // Mantive sua URL original da planilha
 const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
 
@@ -174,126 +258,7 @@ function parseCsvLine(line) {
     result.push(currentField.trim());
     return result;
 }
-/*
-async function fetchOffers() {
-    try {
-        const response = await fetch(OFFERS_CSV_URL);
-        const csvText = await response.text();
-        const lines = csvText.split('\n').filter(l => l.trim() !== '');
-        const headers = parseCsvLine(lines[0]);
-        
-        offersData = lines.slice(1).map(line => {
-            const values = parseCsvLine(line);
-            const row = {};
-            headers.forEach((h, idx) => {
-                row[h.trim()] = values[idx] ? values[idx].replace(/^"|"$/g, '').replace(/\r$/, '') : '';
-            });
-            return row;
-        }).filter(o => o.img && o.img.length > 10);
+});
 
-        if (offersData.length > 0) {
-            updateOffer();
-            setInterval(updateOffer, 15000);
-        }
-    } catch (e) { 
-        console.error("Erro ao carregar ofertas:", e);
-        if(document.getElementById('loading-ads')) {
-            document.getElementById('loading-ads').innerText = "Fortaleça a sua fé diariamente.";
-        }
-    }
-}
-function updateOffer() {
-    if (offersData.length === 0) return;
-    
-    // Sorteia uma oferta
-    const ad = offersData[Math.floor(Math.random() * offersData.length)];
-    
-    const loading = document.getElementById('loading-ads');
-    const link = document.getElementById('content-link');
-    const img = document.getElementById('content-image');
-    
-    // Só prossegue se houver uma imagem válida no dado sorteado
-    if (ad['img'] && ad['img'].length > 10) {
-        // 1. Alimenta os dados
-        img.src = ad['img'];
-        document.getElementById('content-title').innerText = ad['Item_Name'] || "";
-        document.getElementById('offer-description').innerText = ad['Description'] || "";
-        link.href = ad['Offer_Link'] || "#";
 
-        // 2. Quando a imagem terminar de carregar de fato
-        img.onload = () => {
-            if (loading) loading.style.display = 'none'; // Esconde o texto de espera
-            link.classList.remove('hidden'); // Mostra a oferta montada
-            img.style.display = 'block'; // Garante que a imagem apareça
-        };
-    }
-}
 
-*/
-
-async function fetchOffers() {
-    try {
-        const response = await fetch('./c55_palavraquefortifica.xml');
-        if (!response.ok) throw new Error("Erro ao carregar XML");
-        
-        const str = await response.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(str, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
-
-        offersData = Array.from(items).map(item => {
-            const itemStr = new XMLSerializer().serializeToString(item);
-            
-            // Função para extrair conteúdo entre tags, ignorando prefixos (g:)
-            const extract = (tag) => {
-                const regex = new RegExp(`<([^> ]*:)?${tag}[^>]*>([^]*?)<\\/\\1?${tag}>`, 'i');
-                const match = itemStr.match(regex);
-                return match ? match[2].trim().replace('<![CDATA[', '').replace(']]>', '') : "";
-            };
-
-            let price = extract("price");
-            if (price) {
-                const num = price.replace(/[a-zA-Z]/g, '').trim();
-                price = "R$ " + num.replace('.', ',');
-            }
-
-            return {
-                title: item.querySelector("title")?.textContent || "Arte Cristã",
-                link: item.querySelector("link")?.textContent || "#",
-                img: extract("image_link"),
-                price: price
-            };
-        }).filter(ad => ad.img !== "");
-
-        if (offersData.length > 0) {
-            updateOffer();
-        }
-    } catch (err) {
-        console.error("Erro Crítico:", err);
-        document.getElementById('loading-ads').style.display = 'none';
-    }
-}
-
-function updateOffer() {
-    if (offersData.length === 0) return;
-    
-    const ad = offersData[Math.floor(Math.random() * offersData.length)];
-    const loading = document.getElementById('loading-ads');
-    const link = document.getElementById('content-link');
-    const img = document.getElementById('content-image');
-    const title = document.getElementById('content-title');
-    const priceDisplay = document.getElementById('offer-price');
-
-    if (link && img) {
-        // Injeção direta e forçada
-        img.src = ad.img;
-        title.innerText = ad.title;
-        link.href = ad.link;
-        if (priceDisplay) priceDisplay.innerText = ad.price;
-
-        // Revela imediatamente
-        if (loading) loading.style.display = 'none';
-        link.classList.remove('hidden');
-        link.style.setProperty('display', 'flex', 'important');
-    }
-}
