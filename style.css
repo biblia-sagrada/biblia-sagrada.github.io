@@ -347,3 +347,6 @@ header {
     width: 100%; font-weight: bold; margin-top: 10px;
     cursor: pointer;
 }
+.content-wrapper.hidden {
+    display: none !important;
+}
