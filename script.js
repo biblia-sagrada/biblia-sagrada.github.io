@@ -233,40 +233,40 @@ function updateOffer() {
 async function fetchOffers() {
     try {
         const response = await fetch('https://biblia-sagrada.github.io/c55_palavraquefortifica.xml');
+        if (!response.ok) throw new Error("Erro ao baixar XML");
+        
         const str = await response.text();
         const data = new window.DOMParser().parseFromString(str, "text/xml");
-        
-        // O segredo para ler o XML da Colab55/Google:
-        const ns = "http://base.google.com/ns/1.0";
         const items = data.querySelectorAll("item");
 
         offersData = Array.from(items).map(item => {
-            const title = item.querySelector("title")?.textContent || "";
-            const link = item.querySelector("link")?.textContent || "#";
-            
-            // Busca as tags especiais com o Namespace correto
-            const img = item.getElementsByTagNameNS(ns, "image_link")[0]?.textContent || "";
-            let price = item.getElementsByTagNameNS(ns, "price")[0]?.textContent || "";
+            // Função que busca a tag de qualquer jeito (com ou sem g:)
+            const findTag = (name) => {
+                return item.getElementsByTagName("g:" + name)[0]?.textContent || 
+                       item.getElementsByTagName(name)[0]?.textContent || "";
+            };
 
-            // Formatação do preço (ex: 49.90 BRL -> R$ 49,90)
+            const title = item.querySelector("title")?.textContent || "Arte Cristã";
+            const link = item.querySelector("link")?.textContent || "#";
+            const img = findTag("image_link");
+            let price = findTag("price");
+
+            // Formata o preço (Ex: 49.90 BRL -> R$ 49,90)
             if (price) {
-                price = price.replace('BRL', '').trim().replace('.', ',');
-                price = "R$ " + price;
+                price = "R$ " + price.replace('BRL', '').trim().replace('.', ',');
             }
 
-            return {
-                Item_Name: title,
-                img: img,
-                Offer_Link: link,
-                Price: price
-            };
+            return { title, link, img, price };
         });
 
         if (offersData.length > 0) {
             updateOffer();
+        } else {
+            // Se o XML estiver vazio, removemos a mensagem de carregamento
+            document.getElementById('loading-ads').style.display = 'none';
         }
     } catch (error) {
-        console.error("Erro ao ler XML:", error);
+        console.error("Falha na publicidade:", error);
         document.getElementById('loading-ads').style.display = 'none';
     }
 }
@@ -281,16 +281,25 @@ function updateOffer() {
     const img = document.getElementById('content-image');
     const title = document.getElementById('content-title');
     const priceDisplay = document.getElementById('offer-price');
-    
+
     if (ad.img) {
         img.src = ad.img;
-        title.innerText = ad.Item_Name;
-        link.href = ad.Offer_Link;
-        if (priceDisplay) priceDisplay.innerText = ad.Price;
+        title.innerText = ad.title;
+        link.href = ad.link;
+        if (priceDisplay) priceDisplay.innerText = ad.price;
 
+        // Se a imagem carregar, mostra tudo
         img.onload = () => {
             if (loading) loading.style.display = 'none';
             link.classList.remove('hidden');
         };
+
+        // Segurança: Se a imagem demorar mais de 3 segundos, mostra o texto assim mesmo
+        setTimeout(() => {
+            if (link.classList.contains('hidden')) {
+                if (loading) loading.style.display = 'none';
+                link.classList.remove('hidden');
+            }
+        }, 3000);
     }
 }
