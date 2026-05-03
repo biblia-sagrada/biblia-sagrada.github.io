@@ -239,6 +239,15 @@ header {
     overflow: hidden;
 }
 
+/* Estilo para o preço */
+.preco-oferta {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2e7d32; /* Verde escuro para facilitar a leitura */
+    margin: 4px 0;
+}
+
 /* Esconde a imagem se o link estiver vazio ou quebrado */
 .content-image:not([src]), 
 .content-image[src=""],
