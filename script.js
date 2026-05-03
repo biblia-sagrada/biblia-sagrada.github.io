@@ -1,11 +1,12 @@
-// 1. Declaramos a variável globalmente no topo
+// --- 1. VARIÁVEIS GLOBAIS ---
 let livros = [];
 let offersData = [];
 
-// 2. Definimos a função fetchOffers (ela DEVE estar fora de qualquer outra função)
+// --- 2. LOGICA DE OFERTAS (COLAB55) ---
+
 async function fetchOffers() {
     try {
-        console.log("Iniciando busca do XML...");
+        console.log("Iniciando busca do XML Colab55...");
         const response = await fetch('./c55_palavraquefortifica.xml');
         if (!response.ok) throw new Error("Erro ao carregar arquivo XML");
         
@@ -50,7 +51,6 @@ async function fetchOffers() {
     }
 }
 
-// 3. Função para atualizar a interface
 function updateOffer() {
     if (offersData.length === 0) return;
     
@@ -69,81 +69,29 @@ function updateOffer() {
 
         if (loading) loading.style.display = 'none';
         link.classList.remove('hidden');
-        link.style.display = 'flex'; // Força a exibição
+        link.style.display = 'flex'; 
     }
 }
 
-// 4. O GATILHO: Chama as funções quando a página carregar
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Página carregada, chamando fetchOffers...");
-    
-    // Verifica se a função existe antes de chamar para evitar o erro de ReferenceError
-    if (typeof fetchOffers === "function") {
-        fetchOffers();
-    } else {
-        console.error("Erro: A função fetchOffers não foi encontrada no carregamento.");
-    }
-
-    
-// Mantive sua URL original da planilha
-const OFFERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaiIM_7fbsAN3SJvgWmJhEeciFZtvCeUFEyJwyaldEDlbh5kxXgg5l6y31V7RpxGldW-Kpc7oWdHst/pub?gid=1157838368&single=true&output=csv";
-
-// --- INICIALIZAÇÃO SEGURA ---
-document.addEventListener("DOMContentLoaded", () => {
-    // Carrega o Velho Testamento por padrão ao abrir o app
-    carregarDados('velho');
-    
-    // Inicia a busca de ofertas
-    fetchOffers();
-
-    // Configura o botão de recolher a publicidade
-    const collapseBtn = document.getElementById('collapse-button');
-    if (collapseBtn) {
-        collapseBtn.onclick = () => {
-            const area = document.getElementById('content-area');
-            area.classList.toggle('collapsed');
-            collapseBtn.innerText = area.classList.contains('collapsed') ? '▲' : '▼';
-        };
-    }
-});
-
-// --- LOGICA DE CARREGAMENTO DE DADOS ---
+// --- 3. LOGICA DA BÍBLIA ---
 
 async function carregarDados(testamento) {
     const arquivo = testamento === 'velho' ? './velho.json' : './novo.json';
-    
     try {
         const res = await fetch(arquivo);
-        if (!res.ok) throw new Error("Não foi possível encontrar o arquivo " + arquivo);
-        
+        if (!res.ok) throw new Error("Erro ao carregar " + arquivo);
         livros = await res.json();
         renderizarGrade();
-        
-        document.getElementById('menu').style.display = 'block';
-        document.getElementById('telaLeitura').style.display = 'none';
-        window.scrollTo(0, 0);
-        
+        irParaMenu();
     } catch (err) {
         console.error("Erro ao carregar os dados da Bíblia:", err);
     }
-}
-
-function irParaMenu() {
-    // Retorna ao menu inicial limpando estados de leitura
-    document.getElementById('menu').style.display = 'block';
-    document.getElementById('telaLeitura').style.display = 'none';
-    window.scrollTo(0, 0);
-}
-
-function filtrarTestamento(tipo) {
-    carregarDados(tipo);
 }
 
 function renderizarGrade() {
     const grade = document.getElementById('listaLivros');
     if (!grade) return;
     grade.innerHTML = '';
-    
     livros.forEach((livro, index) => {
         const btn = document.createElement('button');
         btn.className = 'btn-livro';
@@ -153,21 +101,16 @@ function renderizarGrade() {
     });
 }
 
-// --- NAVEGAÇÃO INTERNA (CAPÍTULOS E VERSÍCULOS) ---
-
 function abrirSeletorCapitulos(livroIdx) {
     const livro = livros[livroIdx];
     document.getElementById('menu').style.display = 'none';
     document.getElementById('telaLeitura').style.display = 'block';
-    
     document.getElementById('nomeLivro').innerText = livro.name;
     
     const seletor = document.getElementById('seletorCapitulos');
     const areaTexto = document.getElementById('texto');
     
-    // Limpa e prepara o título de escolha
     seletor.innerHTML = `<h3 class="titulo-selecao">Escolha o Capítulo:</h3>`;
-    
     const gradeBotoes = document.createElement('div');
     gradeBotoes.className = "lista-grid";
     areaTexto.innerHTML = ""; 
@@ -179,12 +122,7 @@ function abrirSeletorCapitulos(livroIdx) {
         btnCap.onclick = () => carregarCapitulo(livroIdx, capIdx);
         gradeBotoes.appendChild(btnCap);
     });
-
     seletor.appendChild(gradeBotoes);
-
-    if (livro.chapters.length === 1) {
-        carregarCapitulo(livroIdx, 0);
-    }
     window.scrollTo(0, 0);
 }
 
@@ -193,7 +131,6 @@ function carregarCapitulo(livroIdx, capIdx) {
     const seletor = document.getElementById('seletorCapitulos');
     const areaTexto = document.getElementById('texto');
     
-    // IMPORTANTE: Criamos a estrutura que será fixada pelo CSS
     seletor.innerHTML = `
         <div class="barra-capitulo">
             <span class="label-cap">Capítulo ${capIdx + 1}</span>
@@ -201,64 +138,50 @@ function carregarCapitulo(livroIdx, capIdx) {
         </div>
     `;
 
-    const html = livro.chapters[capIdx].map((versiculo, idx) => {
-        return `<p class="versiculo"><span class="num-v">${idx + 1}</span>${versiculo}</p>`;
-    }).join('');
+    areaTexto.innerHTML = livro.chapters[capIdx].map((versiculo, idx) => 
+        `<p class="versiculo"><span class="num-v">${idx + 1}</span>${versiculo}</p>`
+    ).join('');
     
-    areaTexto.innerHTML = html;
-    
-    // Faz a página voltar ao topo para iniciar a leitura
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// --- COMPARTILHAMENTO ---
+function irParaMenu() {
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('telaLeitura').style.display = 'none';
+    window.scrollTo(0, 0);
+}
+
+// --- 4. UTILITÁRIOS E MODAL ---
 
 function compartilharWhatsApp() {
-    const linha1 = "📖 *Um presente para você!*";
-    const linha2 = "Site da Bíblia com letras grandes e leitura bem simples.";
-    const link = window.location.href.split('?')[0];
-    const assinatura = "_Deus abençoe todos nós!_ ✨";
-
-    const mensagem = `${linha1}\n\n${linha2}\n\n👉 *Acesse aqui:* ${link}\n\n${assinatura}`;
-    const linkZap = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
-    window.open(linkZap, '_blank');
+    const mensagem = `📖 *Um presente para você!*\n\nSite da Bíblia com letras grandes.\n\n👉 *Acesse:* ${window.location.href.split('?')[0]}\n\n_Deus abençoe!_ ✨`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`, '_blank');
 }
 
+function abrirInfo() { document.getElementById('modalInfo').style.display = "block"; }
+function fecharInfo() { document.getElementById('modalInfo').style.display = "none"; }
 
-function abrirInfo() {
-    document.getElementById('modalInfo').style.display = "block";
-}
-
-function fecharInfo() {
-    document.getElementById('modalInfo').style.display = "none";
-}
-
-// Fecha se o usuário clicar fora da caixinha branca
-window.onclick = function(event) {
+window.onclick = (e) => {
     const modal = document.getElementById('modalInfo');
-    if (event.target == modal) {
-        fecharInfo();
-    }
-}
+    if (e.target == modal) fecharInfo();
+};
 
-// --- LOGICA DE OFERTAS (MANTIDA ORIGINAL) ---
+// --- 5. INICIALIZAÇÃO (DOM CONTENT LOADED) ---
 
-function parseCsvLine(line) {
-    const result = [];
-    let inQuote = false;
-    let currentField = '';
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"') inQuote = !inQuote;
-        else if (char === ',' && !inQuote) {
-            result.push(currentField.trim());
-            currentField = '';
-        } else currentField += char;
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Carrega Bíblia (Velho Testamento)
+    carregarDados('velho');
+    
+    // 2. Carrega Ofertas
+    fetchOffers();
+
+    // 3. Configura botão de recolher ads
+    const collapseBtn = document.getElementById('collapse-button');
+    if (collapseBtn) {
+        collapseBtn.onclick = () => {
+            const area = document.getElementById('content-area');
+            area.classList.toggle('collapsed');
+            collapseBtn.innerText = area.classList.contains('collapsed') ? '▲' : '▼';
+        };
     }
-    result.push(currentField.trim());
-    return result;
-}
 });
-
-
-
