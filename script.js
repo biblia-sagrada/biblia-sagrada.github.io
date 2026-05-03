@@ -233,9 +233,8 @@ function updateOffer() {
 
 async function fetchOffers() {
     try {
-        // Busca o XML (usando caminho relativo para evitar problemas de domínio)
         const response = await fetch('./c55_palavraquefortifica.xml');
-        if (!response.ok) throw new Error("Não foi possível carregar o XML");
+        if (!response.ok) throw new Error("Erro ao carregar arquivo XML");
         
         const str = await response.text();
         const parser = new DOMParser();
@@ -243,40 +242,45 @@ async function fetchOffers() {
         const items = xmlDoc.querySelectorAll("item");
 
         offersData = Array.from(items).map(item => {
-            // FUNÇÃO ROBUSTA: Busca a tag ignorando o prefixo (g:)
-            const getVal = (tagName) => {
-                const el = Array.from(item.children).find(child => child.localName === tagName);
-                return el ? el.textContent : "";
+            // Função ultra-robusta: varre todos os filhos do item
+            const findValueByTagName = (name) => {
+                const children = item.children;
+                for (let i = 0; i < children.length; i++) {
+                    // Verifica se o nome da etiqueta termina com o que queremos (ex: image_link)
+                    if (children[i].nodeName.endsWith(name)) {
+                        return children[i].textContent;
+                    }
+                }
+                return "";
             };
 
-            let precoRaw = getVal("price"); // Pega "49.90 BRL"
-            let precoFormatado = "";
-            
-            if (precoRaw) {
-                const apenasNumeros = precoRaw.replace(/[a-zA-Z]/g, '').trim();
-                precoFormatado = "R$ " + apenasNumeros.replace('.', ',');
+            const title = item.querySelector("title")?.textContent || "Arte Cristã";
+            const link = item.querySelector("link")?.textContent || "#";
+            const img = findValueByTagName("image_link");
+            let price = findValueByTagName("price");
+
+            // Formatação do preço
+            if (price) {
+                const num = price.replace(/[a-zA-Z]/g, '').trim();
+                price = "R$ " + num.replace('.', ',');
             }
 
-            return {
-                title: item.querySelector("title")?.textContent || "Produto Inspirador",
-                link: item.querySelector("link")?.textContent || "#",
-                img: getVal("image_link"),
-                price: precoFormatado
-            };
-        }).filter(ad => ad.img); // Só mantém se tiver imagem
+            return { title, link, img, price };
+        }).filter(ad => ad.img !== ""); // Remove itens que falharam em pegar a imagem
+
+        console.log("Produtos carregados:", offersData.length); // Verificação no console
 
         if (offersData.length > 0) {
             updateOffer();
         } else {
-            console.error("Nenhum produto válido encontrado no XML.");
+            console.warn("Atenção: XML lido, mas nenhum campo de imagem foi identificado.");
             document.getElementById('loading-ads').style.display = 'none';
         }
     } catch (err) {
-        console.error("Erro na busca de ofertas:", err);
+        console.error("Erro crítico na busca:", err);
         document.getElementById('loading-ads').style.display = 'none';
     }
 }
-
 function updateOffer() {
     if (offersData.length === 0) return;
 
