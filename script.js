@@ -7,6 +7,13 @@ let offersData = [];
 let currentIndex = 0;
 let intervalId = null;
 
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 async function fetchOffers() {
     try {
         console.log("Iniciando busca do XML...");
@@ -54,6 +61,9 @@ async function fetchOffers() {
 
         console.log("Produtos carregados:", offersData.length);
 
+        shuffle(offersData);
+        currentIndex = 0;
+        
         if (offersData.length > 0) {
             currentIndex = 0;
 
@@ -81,14 +91,19 @@ function updateOffer() {
 
     const ad = offersData[currentIndex];
 
-    // 🔁 avança em loop
-    currentIndex = (currentIndex + 1) % offersData.length;
+    currentIndex++;
 
-    const loading = document.getElementById('loading-ads');
+    // 🔁 quando acabar, embaralha de novo
+    if (currentIndex >= offersData.length) {
+        shuffle(offersData);
+        currentIndex = 0;
+    }
+
     const link = document.getElementById('content-link');
     const img = document.getElementById('content-image');
     const title = document.getElementById('content-title');
     const priceDisplay = document.getElementById('offer-price');
+    const loading = document.getElementById('loading-ads');
 
     if (link && img) {
         img.src = ad.img;
