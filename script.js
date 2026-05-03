@@ -231,86 +231,69 @@ function updateOffer() {
 
 */
 
-function updateOffer() {
-    // Verifica se temos dados carregados
-    if (offersData.length === 0) {
-        console.error("Tentativa de atualizar oferta sem dados.");
-        return;
+async function fetchOffers() {
+    try {
+        const response = await fetch('./c55_palavraquefortifica.xml');
+        if (!response.ok) throw new Error("Erro ao carregar XML");
+        
+        const str = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(str, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
+
+        offersData = Array.from(items).map(item => {
+            const itemStr = new XMLSerializer().serializeToString(item);
+            
+            // Função para extrair conteúdo entre tags, ignorando prefixos (g:)
+            const extract = (tag) => {
+                const regex = new RegExp(`<([^> ]*:)?${tag}[^>]*>([^]*?)<\\/\\1?${tag}>`, 'i');
+                const match = itemStr.match(regex);
+                return match ? match[2].trim().replace('<![CDATA[', '').replace(']]>', '') : "";
+            };
+
+            let price = extract("price");
+            if (price) {
+                const num = price.replace(/[a-zA-Z]/g, '').trim();
+                price = "R$ " + num.replace('.', ',');
+            }
+
+            return {
+                title: item.querySelector("title")?.textContent || "Arte Cristã",
+                link: item.querySelector("link")?.textContent || "#",
+                img: extract("image_link"),
+                price: price
+            };
+        }).filter(ad => ad.img !== "");
+
+        if (offersData.length > 0) {
+            updateOffer();
+        }
+    } catch (err) {
+        console.error("Erro Crítico:", err);
+        document.getElementById('loading-ads').style.display = 'none';
     }
+}
+
+function updateOffer() {
+    if (offersData.length === 0) return;
     
-    // Sorteia um produto
     const ad = offersData[Math.floor(Math.random() * offersData.length)];
-    
-    // Seleciona os elementos do DOM
     const loading = document.getElementById('loading-ads');
     const link = document.getElementById('content-link');
     const img = document.getElementById('content-image');
     const title = document.getElementById('content-title');
     const priceDisplay = document.getElementById('offer-price');
 
-    // Se o link e a imagem existirem no HTML, vamos preencher
     if (link && img) {
-        // 1. Injeta os dados
+        // Injeção direta e forçada
         img.src = ad.img;
-        img.alt = ad.title;
         title.innerText = ad.title;
         link.href = ad.link;
-        
-        if (priceDisplay) {
-            priceDisplay.innerText = ad.price;
-        }
+        if (priceDisplay) priceDisplay.innerText = ad.price;
 
-        // 2. REVELAÇÃO IMEDIATA (O "Pulo do Gato")
-        // Esconde a mensagem de carregamento
+        // Revela imediatamente
         if (loading) loading.style.display = 'none';
-        
-        // Remove a classe hidden e força o display flex
         link.classList.remove('hidden');
-        link.style.display = 'flex'; 
-        
-        console.log("Oferta exibida na tela:", ad.title);
-    } else {
-        console.error("Elementos HTML da oferta não foram encontrados.");
-    }
-}
-function updateOffer() {
-    if (offersData.length === 0) return;
-
-    const ad = offersData[Math.floor(Math.random() * offersData.length)];
-    
-    const elements = {
-        loading: document.getElementById('loading-ads'),
-        link: document.getElementById('content-link'),
-        img: document.getElementById('content-image'),
-        title: document.getElementById('content-title'),
-        price: document.getElementById('offer-price')
-    };
-
-    if (elements.img && ad.img) {
-        // 1. Preenche os dados primeiro
-        elements.title.innerText = ad.title;
-        elements.link.href = ad.link;
-        if (elements.price) elements.price.innerText = ad.price;
-        
-        // 2. Configura a imagem
-        elements.img.src = ad.img;
-
-        // 3. LOGICA DE EXIBIÇÃO SEGURA
-        // Se a imagem carregar com sucesso
-        elements.img.onload = () => mostrarAnuncio(elements);
-        
-        // Se a imagem falhar, tenta outra oferta após 1 segundo
-        elements.img.onerror = () => fetchOffers();
-
-        // Backup: Se em 4 segundos nada acontecer, força a exibição (segurança para idosos)
-        setTimeout(() => mostrarAnuncio(elements), 4000);
-    }
-}
-
-function mostrarAnuncio(el) {
-    if (el.loading) el.loading.style.display = 'none';
-    if (el.link) {
-        el.link.classList.remove('hidden');
-        el.link.style.display = 'flex'; // Garante o alinhamento
+        link.style.setProperty('display', 'flex', 'important');
     }
 }
