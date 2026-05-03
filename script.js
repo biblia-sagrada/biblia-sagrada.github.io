@@ -186,8 +186,6 @@ async function fetchOffers() {
     }
 }
 */
-// A lista que vai guardar os produtos da Colab55
-let offersData = [];
 
 // Nova função para buscar o XML
 async function fetchOffers() {
