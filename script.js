@@ -6,69 +6,53 @@ let offersData = [];
 
 async function fetchOffers() {
     try {
-        console.log("Iniciando busca do XML (Modo Blindado)...");
-        
-        // Adicionamos um carimbo de tempo (?t=...) para forçar o navegador a pegar o arquivo novo
-        const response = await fetch('./c55_palavraquefortifica.xml?t=' + new Date().getTime(), {
-            cache: "no-store"
-        });
-        
-        if (!response.ok) throw new Error("Não foi possível acessar o arquivo XML.");
-        
+        console.log("Iniciando busca do XML...");
+        // O ?t= garante que o navegador não use uma versão velha do arquivo
+        const response = await fetch('./c55_palavraquefortifica.xml?t=' + Date.now());
         const str = await response.text();
         
-        // Se o XML veio vazio por algum motivo, paramos aqui
-        if (str.length < 100) {
-            console.error("O arquivo XML parece estar vazio ou mal formatado.");
-            return;
-        }
-
+        // Criamos um interpretador de XML
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(str, "text/xml");
         const items = xmlDoc.querySelectorAll("item");
 
         offersData = Array.from(items).map(item => {
-            // Pegamos o HTML bruto do item para garantir que nada escape do Regex
-            const itemStr = new XMLSerializer().serializeToString(item);
+            // Transformamos o item em texto para procurar as tags "na marra"
+            const rawItem = new XMLSerializer().serializeToString(item);
             
-            const extract = (tag) => {
-                // Regex melhorada para pegar conteúdo mesmo com quebras de linha
-                const regex = new RegExp(`<([^> ]*:)?${tag}[^>]*>([^]*?)<\\/\\1?${tag}>`, 'i');
-                const match = itemStr.match(regex);
-                if (match) {
-                    return match[2]
-                        .replace(/<!\[CDATA\[/g, '')
-                        .replace(/\]\]>/g, '')
-                        .trim();
+            // Função para pegar qualquer tag, com ou sem "g:"
+            const getTagContent = (tagName) => {
+                const regex = new RegExp(`<[^>]*${tagName}[^>]*>([^]*?)<\/[^>]*${tagName}>`, 'i');
+                const match = rawItem.match(regex);
+                if (match && match[1]) {
+                    return match[1].replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
                 }
                 return "";
             };
 
-            let price = extract("price");
+            const title = item.querySelector("title")?.textContent || "Arte Cristã";
+            const link = item.querySelector("link")?.textContent || "#";
+            const img = getTagContent("image_link");
+            let price = getTagContent("price");
+
             if (price) {
-                const num = price.replace(/[a-zA-Z]/g, '').trim();
-                price = "R$ " + num.replace('.', ',');
+                price = "R$ " + price.replace('BRL', '').trim().replace('.', ',');
             }
 
-            return {
-                title: item.querySelector("title")?.textContent || "Arte Cristã",
-                link: item.querySelector("link")?.textContent || "#",
-                img: extract("image_link"),
-                price: price
-            };
-        }).filter(ad => ad.img && ad.img.includes('http')); // Só aceita se tiver um link de imagem válido
+            return { title, link, img, price };
+        }).filter(ad => ad.img.startsWith('http')); // Só aceita se for um link real
 
-        console.log("Sucesso! Produtos processados:", offersData.length);
+        console.log("Produtos identificados:", offersData.length);
 
         if (offersData.length > 0) {
             updateOffer();
         } else {
-            console.warn("Nenhum link de imagem foi encontrado dentro das tags do XML.");
-            if(document.getElementById('loading-ads')) document.getElementById('loading-ads').style.display = 'none';
+            // Se falhar, removemos o carregando para não atrapalhar o idoso
+            const loading = document.getElementById('loading-ads');
+            if (loading) loading.style.display = 'none';
         }
     } catch (err) {
-        console.error("Erro Crítico na busca:", err);
-        if(document.getElementById('loading-ads')) document.getElementById('loading-ads').style.display = 'none';
+        console.error("Erro:", err);
     }
 }
 
