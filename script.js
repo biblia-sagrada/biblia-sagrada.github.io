@@ -234,7 +234,7 @@ function updateOffer() {
 async function fetchOffers() {
     try {
         const response = await fetch('./c55_palavraquefortifica.xml');
-        if (!response.ok) throw new Error("Erro ao carregar arquivo XML");
+        if (!response.ok) throw new Error("Erro ao carregar XML");
         
         const str = await response.text();
         const parser = new DOMParser();
@@ -242,45 +242,48 @@ async function fetchOffers() {
         const items = xmlDoc.querySelectorAll("item");
 
         offersData = Array.from(items).map(item => {
-            // Função ultra-robusta: varre todos os filhos do item
-            const findValueByTagName = (name) => {
-                const children = item.children;
-                for (let i = 0; i < children.length; i++) {
-                    // Verifica se o nome da etiqueta termina com o que queremos (ex: image_link)
-                    if (children[i].nodeName.endsWith(name)) {
-                        return children[i].textContent;
-                    }
+            // SCANNER TOTAL: Pega absolutamente todas as tags dentro do <item>
+            const allTags = item.getElementsByTagName("*");
+            let img = "";
+            let price = "";
+
+            for (let tag of allTags) {
+                // Verifica o nome da etiqueta (ex: g:image_link ou image_link)
+                const name = tag.nodeName.toLowerCase();
+                
+                if (name.includes("image_link")) {
+                    img = tag.textContent;
                 }
-                return "";
-            };
+                if (name.includes("price")) {
+                    price = tag.textContent;
+                }
+            }
 
             const title = item.querySelector("title")?.textContent || "Arte Cristã";
             const link = item.querySelector("link")?.textContent || "#";
-            const img = findValueByTagName("image_link");
-            let price = findValueByTagName("price");
 
-            // Formatação do preço
+            // Formatação do preço (49.90 BRL -> R$ 49,90)
             if (price) {
                 const num = price.replace(/[a-zA-Z]/g, '').trim();
                 price = "R$ " + num.replace('.', ',');
             }
 
             return { title, link, img, price };
-        }).filter(ad => ad.img !== ""); // Remove itens que falharam em pegar a imagem
+        }).filter(ad => ad.img !== ""); // Só aceita se achou a imagem
 
-        console.log("Produtos carregados:", offersData.length); // Verificação no console
+        console.log("Produtos identificados com sucesso:", offersData.length);
 
         if (offersData.length > 0) {
             updateOffer();
         } else {
-            console.warn("Atenção: XML lido, mas nenhum campo de imagem foi identificado.");
             document.getElementById('loading-ads').style.display = 'none';
         }
     } catch (err) {
-        console.error("Erro crítico na busca:", err);
+        console.error("Erro crítico:", err);
         document.getElementById('loading-ads').style.display = 'none';
     }
 }
+
 function updateOffer() {
     if (offersData.length === 0) return;
 
