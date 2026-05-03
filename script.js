@@ -140,6 +140,23 @@ function compartilharWhatsApp() {
     window.open(linkZap, '_blank');
 }
 
+
+function abrirInfo() {
+    document.getElementById('modalInfo').style.display = "block";
+}
+
+function fecharInfo() {
+    document.getElementById('modalInfo').style.display = "none";
+}
+
+// Fecha se o usuário clicar fora da caixinha branca
+window.onclick = function(event) {
+    const modal = document.getElementById('modalInfo');
+    if (event.target == modal) {
+        fecharInfo();
+    }
+}
+
 // --- LOGICA DE OFERTAS (MANTIDA ORIGINAL) ---
 
 function parseCsvLine(line) {
@@ -185,55 +202,6 @@ async function fetchOffers() {
         }
     }
 }
-*/
-
-// Nova função para buscar o XML
-async function fetchOffers() {
-    try {
-        // 1. Busca o arquivo XML no seu Github
-        const response = await fetch('https://biblia-sagrada.github.io/c55_palavraquefortifica.xml');
-        const str = await response.text();
-        
-        // 2. Transforma o texto XML em um formato que o JavaScript entende
-        const data = new window.DOMParser().parseFromString(str, "text/xml");
-        
-        // 3. Pega todos os produtos (geralmente ficam dentro da tag <item>)
-        const items = data.querySelectorAll("item");
-        
-        // 4. Converte os itens do XML para o formato que a sua publicidade já usa
-        offersData = Array.from(items).map(item => {
-            // Busca a imagem (tenta várias tags comuns em XML de produtos)
-            const imgNode = item.getElementsByTagName("g:image_link")[0] || 
-                            item.getElementsByTagName("image_link")[0] || 
-                            item.querySelector("image");
-                            
-            const titleNode = item.querySelector("title");
-            const linkNode = item.querySelector("link");
-            const descNode = item.querySelector("description");
-
-            // Limpa a descrição caso o XML venha com códigos HTML misturados
-            let cleanDesc = descNode ? descNode.textContent.replace(/(<([^>]+)>)/gi, "") : "";
-            if (cleanDesc.length > 60) cleanDesc = cleanDesc.substring(0, 60) + "..."; // Limita o tamanho
-
-            return {
-                Item_Name: titleNode ? titleNode.textContent : "Produto Exclusivo",
-                Description: cleanDesc,
-                img: imgNode ? imgNode.textContent : "",
-                Offer_Link: linkNode ? linkNode.textContent : "#"
-            };
-        });
-
-        // 5. Após carregar tudo, chama a função para mostrar a oferta na tela
-        updateOffer();
-        
-    } catch (error) {
-        console.error("Erro ao carregar os produtos da Colab55:", error);
-        // Se der erro, esconde a área de carregamento para não ficar travado
-        const loading = document.getElementById('loading-ads');
-        if (loading) loading.style.display = 'none';
-    }
-}
-
 function updateOffer() {
     if (offersData.length === 0) return;
     
@@ -261,18 +229,87 @@ function updateOffer() {
     }
 }
 
-function abrirInfo() {
-    document.getElementById('modalInfo').style.display = "block";
+*/
+// 1. Função para buscar os produtos no XML
+async function fetchOffers() {
+    try {
+        const response = await fetch('https://biblia-sagrada.github.io/c55_palavraquefortifica.xml');
+        const str = await response.text();
+        const data = new window.DOMParser().parseFromString(str, "text/xml");
+        const items = data.querySelectorAll("item");
+
+        offersData = Array.from(items).map(item => {
+            // Função segura para buscar tags com ou sem "g:"
+            const getTag = (tag1, tag2) => {
+                const el = item.getElementsByTagName(tag1)[0] || item.getElementsByTagName(tag2)[0];
+                return el ? el.textContent : "";
+            };
+
+            const title = item.querySelector("title") ? item.querySelector("title").textContent : "Arte Exclusiva";
+            const link = item.querySelector("link") ? item.querySelector("link").textContent : "#";
+            const img = getTag("g:image_link", "image_link");
+            let price = getTag("g:price", "price");
+
+            // Formata o preço (A Colab55 costuma enviar como "49.90 BRL")
+            if (price) {
+                price = price.replace('BRL', '').trim(); // Tira o BRL
+                price = "R$ " + price.replace('.', ','); // Troca ponto por vírgula e põe R$
+            }
+
+            return {
+                Item_Name: title,
+                img: img,
+                Offer_Link: link,
+                Price: price
+            };
+        });
+
+        // Só chama a atualização se tiver achado produtos
+        if (offersData.length > 0) {
+            updateOffer();
+        } else {
+            throw new Error("Nenhum produto encontrado no XML.");
+        }
+        
+    } catch (error) {
+        console.error("Erro no XML:", error);
+        // Se falhar, esconde a mensagem "Deus abençoe..." para não ficar travado na tela
+        const loading = document.getElementById('loading-ads');
+        if (loading) loading.style.display = 'none';
+    }
 }
 
-function fecharInfo() {
-    document.getElementById('modalInfo').style.display = "none";
-}
+// 2. Função para montar a oferta na tela
+function updateOffer() {
+    if (offersData.length === 0) return;
+    
+    const ad = offersData[Math.floor(Math.random() * offersData.length)];
+    
+    const loading = document.getElementById('loading-ads');
+    const link = document.getElementById('content-link');
+    const img = document.getElementById('content-image');
+    const title = document.getElementById('content-title');
+    const priceDisplay = document.getElementById('offer-price');
+    const desc = document.getElementById('offer-description');
+    
+    if (ad['img'] && ad['img'].length > 10) {
+        img.src = ad['img'];
+        title.innerText = ad['Item_Name'];
+        link.href = ad['Offer_Link'];
+        
+        // Coloca o preço na tela
+        if (priceDisplay) {
+            priceDisplay.innerText = ad['Price'];
+        }
+        
+        // Remove a descrição caso esteja vazia para não dar espaço extra
+        if (desc) desc.style.display = 'none'; 
 
-// Fecha se o usuário clicar fora da caixinha branca
-window.onclick = function(event) {
-    const modal = document.getElementById('modalInfo');
-    if (event.target == modal) {
-        fecharInfo();
+        // Quando a imagem baixar do servidor, exibe tudo
+        img.onload = () => {
+            if (loading) loading.style.display = 'none';
+            link.classList.remove('hidden');
+            img.style.display = 'block';
+        };
     }
 }
