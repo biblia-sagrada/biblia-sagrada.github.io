@@ -4,6 +4,10 @@ let offersData = [];
 
 // --- 2. LOGICA DE OFERTAS (COLAB55) ---
 
+let offersData = [];
+let currentIndex = 0;
+let intervalId = null;
+
 async function fetchOffers() {
     try {
         console.log("Iniciando busca do XML...");
@@ -14,8 +18,13 @@ async function fetchOffers() {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(str, "text/xml");
 
-        // ✅ CORRETO: usar <entry>
+        // ✅ SEU XML USA <entry>, NÃO <item>
         const items = xmlDoc.getElementsByTagName("entry");
+
+        if (!items.length) {
+            console.warn("Nenhum <entry> encontrado no XML");
+            return;
+        }
 
         offersData = Array.from(items).map(item => {
 
@@ -24,28 +33,40 @@ async function fetchOffers() {
                 return el?.textContent?.trim() || "";
             };
 
-            // 🔥 pega tanto normal quanto g:
             const title = get("g:title") || get("title") || "Arte Cristã";
             const link = get("g:link") || get("link") || "#";
             const img = get("g:image_link");
             let price = get("g:price");
 
+            // 💰 FORMATAÇÃO CORRETA DO PREÇO
             if (price) {
-    const num = parseFloat(price.replace(/[^\d.]/g, ''));
-    price = num.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-}
+                const num = parseFloat(price.replace(/[^\d.]/g, ''));
+                if (!isNaN(num)) {
+                    price = num.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    });
+                }
+            }
 
             return { title, link, img, price };
 
         }).filter(ad => ad.img && ad.img.startsWith('http'));
 
-        console.log("Produtos identificados:", offersData);
+        console.log("Produtos carregados:", offersData.length);
 
         if (offersData.length > 0) {
-            updateOffer();
+            currentIndex = 0;
+
+            updateOffer(); // mostra o primeiro
+
+            // 🔁 evita múltiplos intervals
+            if (intervalId) clearInterval(intervalId);
+
+            // ⏱️ troca automática a cada 10 segundos
+            intervalId = setInterval(updateOffer, 10000);
+        } else {
+            console.warn("Nenhum produto válido encontrado");
         }
 
     } catch (err) {
@@ -53,15 +74,15 @@ async function fetchOffers() {
     }
 }
 
+// 🔥 NÃO ESQUEÇA DISSO
 document.addEventListener("DOMContentLoaded", fetchOffers);
-
-let currentIndex = 0;
 
 function updateOffer() {
     if (offersData.length === 0) return;
 
     const ad = offersData[currentIndex];
 
+    // 🔁 avança em loop
     currentIndex = (currentIndex + 1) % offersData.length;
 
     const loading = document.getElementById('loading-ads');
