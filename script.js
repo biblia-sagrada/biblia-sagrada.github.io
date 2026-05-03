@@ -7,52 +7,57 @@ let offersData = [];
 async function fetchOffers() {
     try {
         console.log("Iniciando busca do XML...");
-        // O ?t= garante que o navegador não use uma versão velha do arquivo
+        // O ?t= evita que o navegador use uma versão antiga em cache
         const response = await fetch('./c55_palavraquefortifica.xml?t=' + Date.now());
         const str = await response.text();
         
-        // Criamos um interpretador de XML
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(str, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
+        
+        // AJUSTE: Buscamos todos os <item>, independentemente de onde estejam no XML
+        const items = xmlDoc.getElementsByTagName("item");
 
         offersData = Array.from(items).map(item => {
-            // Transformamos o item em texto para procurar as tags "na marra"
+            // Transformamos o item em texto para usar Regex (mais seguro contra prefixos g:)
             const rawItem = new XMLSerializer().serializeToString(item);
             
-            // Função para pegar qualquer tag, com ou sem "g:"
-            const getTagContent = (tagName) => {
-                const regex = new RegExp(`<[^>]*${tagName}[^>]*>([^]*?)<\/[^>]*${tagName}>`, 'i');
+            const extract = (tag) => {
+                // Procura a tag ignorando prefixos (como g:) e pega o conteúdo
+                const regex = new RegExp(`<[^>]*${tag}[^>]*>([^]*?)<\/[^>]*${tag}>`, 'i');
                 const match = rawItem.match(regex);
                 if (match && match[1]) {
-                    return match[1].replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
+                    return match[1]
+                        .replace(/<!\[CDATA\[/g, '')
+                        .replace(/\]\]>/g, '')
+                        .trim();
                 }
                 return "";
             };
 
-            const title = item.querySelector("title")?.textContent || "Arte Cristã";
-            const link = item.querySelector("link")?.textContent || "#";
-            const img = getTagContent("image_link");
-            let price = getTagContent("price");
+            const title = extract("title") || "Arte Cristã";
+            const link = extract("link") || "#";
+            const img = extract("image_link");
+            let price = extract("price");
 
             if (price) {
-                price = "R$ " + price.replace('BRL', '').trim().replace('.', ',');
+                // Limpa o preço (ex: "49.90 BRL" vira "R$ 49,90")
+                const num = price.replace(/[a-zA-Z]/g, '').trim();
+                price = "R$ " + num.replace('.', ',');
             }
 
             return { title, link, img, price };
-        }).filter(ad => ad.img.startsWith('http')); // Só aceita se for um link real
+        }).filter(ad => ad.img && ad.img.includes('http')); // Só aceita se tiver link de imagem
 
         console.log("Produtos identificados:", offersData.length);
 
         if (offersData.length > 0) {
             updateOffer();
         } else {
-            // Se falhar, removemos o carregando para não atrapalhar o idoso
             const loading = document.getElementById('loading-ads');
             if (loading) loading.style.display = 'none';
         }
     } catch (err) {
-        console.error("Erro:", err);
+        console.error("Erro ao processar XML:", err);
     }
 }
 
