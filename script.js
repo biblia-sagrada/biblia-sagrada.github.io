@@ -157,7 +157,7 @@ function parseCsvLine(line) {
     result.push(currentField.trim());
     return result;
 }
-
+/*
 async function fetchOffers() {
     try {
         const response = await fetch(OFFERS_CSV_URL);
@@ -183,6 +183,56 @@ async function fetchOffers() {
         if(document.getElementById('loading-ads')) {
             document.getElementById('loading-ads').innerText = "Fortaleça a sua fé diariamente.";
         }
+    }
+}
+*/
+// A lista que vai guardar os produtos da Colab55
+let offersData = [];
+
+// Nova função para buscar o XML
+async function fetchOffers() {
+    try {
+        // 1. Busca o arquivo XML no seu Github
+        const response = await fetch('https://biblia-sagrada.github.io/c55_palavraquefortifica.xml');
+        const str = await response.text();
+        
+        // 2. Transforma o texto XML em um formato que o JavaScript entende
+        const data = new window.DOMParser().parseFromString(str, "text/xml");
+        
+        // 3. Pega todos os produtos (geralmente ficam dentro da tag <item>)
+        const items = data.querySelectorAll("item");
+        
+        // 4. Converte os itens do XML para o formato que a sua publicidade já usa
+        offersData = Array.from(items).map(item => {
+            // Busca a imagem (tenta várias tags comuns em XML de produtos)
+            const imgNode = item.getElementsByTagName("g:image_link")[0] || 
+                            item.getElementsByTagName("image_link")[0] || 
+                            item.querySelector("image");
+                            
+            const titleNode = item.querySelector("title");
+            const linkNode = item.querySelector("link");
+            const descNode = item.querySelector("description");
+
+            // Limpa a descrição caso o XML venha com códigos HTML misturados
+            let cleanDesc = descNode ? descNode.textContent.replace(/(<([^>]+)>)/gi, "") : "";
+            if (cleanDesc.length > 60) cleanDesc = cleanDesc.substring(0, 60) + "..."; // Limita o tamanho
+
+            return {
+                Item_Name: titleNode ? titleNode.textContent : "Produto Exclusivo",
+                Description: cleanDesc,
+                img: imgNode ? imgNode.textContent : "",
+                Offer_Link: linkNode ? linkNode.textContent : "#"
+            };
+        });
+
+        // 5. Após carregar tudo, chama a função para mostrar a oferta na tela
+        updateOffer();
+        
+    } catch (error) {
+        console.error("Erro ao carregar os produtos da Colab55:", error);
+        // Se der erro, esconde a área de carregamento para não ficar travado
+        const loading = document.getElementById('loading-ads');
+        if (loading) loading.style.display = 'none';
     }
 }
 
