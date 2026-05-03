@@ -8,35 +8,27 @@ async function fetchOffers() {
     try {
         console.log("Iniciando busca do XML...");
 
-        const response = await fetch('/c55_palavraquefortifica.xml?t=' + Date.now());
+        const response = await fetch('./c55_palavraquefortifica.xml?t=' + Date.now());
         const str = await response.text();
 
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(str, "text/xml");
 
-        const items = xmlDoc.getElementsByTagName("item");
-
-        if (!items.length) {
-            console.warn("Nenhum <item> encontrado no XML");
-            return;
-        }
+        // ✅ CORRETO: usar <entry>
+        const items = xmlDoc.getElementsByTagName("entry");
 
         offersData = Array.from(items).map(item => {
-            const rawItem = new XMLSerializer().serializeToString(item);
 
-            const extract = (tag) => {
-                const regex = new RegExp(`<[^>]*${tag}[^>]*>([^]*?)<\/[^>]*${tag}>`, 'i');
-                const match = rawItem.match(regex);
-                return match?.[1]
-                    ?.replace(/<!\[CDATA\[/g, '')
-                    ?.replace(/\]\]>/g, '')
-                    ?.trim() || "";
+            const get = (tag) => {
+                const el = item.getElementsByTagName(tag)[0];
+                return el?.textContent?.trim() || "";
             };
 
-            const title = extract("title") || "Arte Cristã";
-            const link = extract("link") || "#";
-            const img = extract("image_link");
-            let price = extract("price");
+            // 🔥 pega tanto normal quanto g:
+            const title = get("g:title") || get("title") || "Arte Cristã";
+            const link = get("g:link") || get("link") || "#";
+            const img = get("g:image_link");
+            let price = get("g:price");
 
             if (price) {
                 const num = price.replace(/[^\d.]/g, '');
@@ -44,14 +36,13 @@ async function fetchOffers() {
             }
 
             return { title, link, img, price };
+
         }).filter(ad => ad.img && ad.img.startsWith('http'));
 
         console.log("Produtos identificados:", offersData);
 
         if (offersData.length > 0) {
             updateOffer();
-        } else {
-            console.warn("Nenhum produto válido encontrado");
         }
 
     } catch (err) {
