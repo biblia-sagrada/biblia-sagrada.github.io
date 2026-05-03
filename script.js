@@ -31,9 +31,12 @@ async function fetchOffers() {
             let price = get("g:price");
 
             if (price) {
-                const num = price.replace(/[^\d.]/g, '');
-                price = "R$ " + num.replace('.', ',');
-            }
+    const num = parseFloat(price.replace(/[^\d.]/g, ''));
+    price = num.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    });
+}
 
             return { title, link, img, price };
 
@@ -52,10 +55,15 @@ async function fetchOffers() {
 
 document.addEventListener("DOMContentLoaded", fetchOffers);
 
+let currentIndex = 0;
+
 function updateOffer() {
     if (offersData.length === 0) return;
-    
-    const ad = offersData[Math.floor(Math.random() * offersData.length)];
+
+    const ad = offersData[currentIndex];
+
+    currentIndex = (currentIndex + 1) % offersData.length;
+
     const loading = document.getElementById('loading-ads');
     const link = document.getElementById('content-link');
     const img = document.getElementById('content-image');
@@ -66,11 +74,12 @@ function updateOffer() {
         img.src = ad.img;
         title.innerText = ad.title;
         link.href = ad.link;
+
         if (priceDisplay) priceDisplay.innerText = ad.price;
 
         if (loading) loading.style.display = 'none';
         link.classList.remove('hidden');
-        link.style.display = 'flex'; 
+        link.style.display = 'flex';
     }
 }
 
