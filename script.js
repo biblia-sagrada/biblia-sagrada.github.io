@@ -230,76 +230,91 @@ function updateOffer() {
 }
 
 */
+
 async function fetchOffers() {
     try {
-        const response = await fetch('https://biblia-sagrada.github.io/c55_palavraquefortifica.xml');
-        if (!response.ok) throw new Error("Erro ao baixar XML");
+        // Busca o XML (usando caminho relativo para evitar problemas de domínio)
+        const response = await fetch('./c55_palavraquefortifica.xml');
+        if (!response.ok) throw new Error("Não foi possível carregar o XML");
         
         const str = await response.text();
-        const data = new window.DOMParser().parseFromString(str, "text/xml");
-        const items = data.querySelectorAll("item");
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(str, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
 
         offersData = Array.from(items).map(item => {
-            // Função que busca a tag de qualquer jeito (com ou sem g:)
-            const findTag = (name) => {
-                return item.getElementsByTagName("g:" + name)[0]?.textContent || 
-                       item.getElementsByTagName(name)[0]?.textContent || "";
+            // FUNÇÃO ROBUSTA: Busca a tag ignorando o prefixo (g:)
+            const getVal = (tagName) => {
+                const el = Array.from(item.children).find(child => child.localName === tagName);
+                return el ? el.textContent : "";
             };
 
-            const title = item.querySelector("title")?.textContent || "Arte Cristã";
-            const link = item.querySelector("link")?.textContent || "#";
-            const img = findTag("image_link");
-            let price = findTag("price");
-
-            // Formata o preço (Ex: 49.90 BRL -> R$ 49,90)
-            if (price) {
-                price = "R$ " + price.replace('BRL', '').trim().replace('.', ',');
+            let precoRaw = getVal("price"); // Pega "49.90 BRL"
+            let precoFormatado = "";
+            
+            if (precoRaw) {
+                const apenasNumeros = precoRaw.replace(/[a-zA-Z]/g, '').trim();
+                precoFormatado = "R$ " + apenasNumeros.replace('.', ',');
             }
 
-            return { title, link, img, price };
-        });
+            return {
+                title: item.querySelector("title")?.textContent || "Produto Inspirador",
+                link: item.querySelector("link")?.textContent || "#",
+                img: getVal("image_link"),
+                price: precoFormatado
+            };
+        }).filter(ad => ad.img); // Só mantém se tiver imagem
 
         if (offersData.length > 0) {
             updateOffer();
         } else {
-            // Se o XML estiver vazio, removemos a mensagem de carregamento
+            console.error("Nenhum produto válido encontrado no XML.");
             document.getElementById('loading-ads').style.display = 'none';
         }
-    } catch (error) {
-        console.error("Falha na publicidade:", error);
+    } catch (err) {
+        console.error("Erro na busca de ofertas:", err);
         document.getElementById('loading-ads').style.display = 'none';
     }
 }
 
 function updateOffer() {
     if (offersData.length === 0) return;
-    
+
     const ad = offersData[Math.floor(Math.random() * offersData.length)];
     
-    const loading = document.getElementById('loading-ads');
-    const link = document.getElementById('content-link');
-    const img = document.getElementById('content-image');
-    const title = document.getElementById('content-title');
-    const priceDisplay = document.getElementById('offer-price');
+    const elements = {
+        loading: document.getElementById('loading-ads'),
+        link: document.getElementById('content-link'),
+        img: document.getElementById('content-image'),
+        title: document.getElementById('content-title'),
+        price: document.getElementById('offer-price')
+    };
 
-    if (ad.img) {
-        img.src = ad.img;
-        title.innerText = ad.title;
-        link.href = ad.link;
-        if (priceDisplay) priceDisplay.innerText = ad.price;
+    if (elements.img && ad.img) {
+        // 1. Preenche os dados primeiro
+        elements.title.innerText = ad.title;
+        elements.link.href = ad.link;
+        if (elements.price) elements.price.innerText = ad.price;
+        
+        // 2. Configura a imagem
+        elements.img.src = ad.img;
 
-        // Se a imagem carregar, mostra tudo
-        img.onload = () => {
-            if (loading) loading.style.display = 'none';
-            link.classList.remove('hidden');
-        };
+        // 3. LOGICA DE EXIBIÇÃO SEGURA
+        // Se a imagem carregar com sucesso
+        elements.img.onload = () => mostrarAnuncio(elements);
+        
+        // Se a imagem falhar, tenta outra oferta após 1 segundo
+        elements.img.onerror = () => fetchOffers();
 
-        // Segurança: Se a imagem demorar mais de 3 segundos, mostra o texto assim mesmo
-        setTimeout(() => {
-            if (link.classList.contains('hidden')) {
-                if (loading) loading.style.display = 'none';
-                link.classList.remove('hidden');
-            }
-        }, 3000);
+        // Backup: Se em 4 segundos nada acontecer, força a exibição (segurança para idosos)
+        setTimeout(() => mostrarAnuncio(elements), 4000);
+    }
+}
+
+function mostrarAnuncio(el) {
+    if (el.loading) el.loading.style.display = 'none';
+    if (el.link) {
+        el.link.classList.remove('hidden');
+        el.link.style.display = 'flex'; // Garante o alinhamento
     }
 }
