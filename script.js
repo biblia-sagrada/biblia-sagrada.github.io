@@ -231,59 +231,48 @@ function updateOffer() {
 
 */
 
-async function fetchOffers() {
-    try {
-        const response = await fetch('./c55_palavraquefortifica.xml');
-        if (!response.ok) throw new Error("Erro ao carregar XML");
+function updateOffer() {
+    // Verifica se temos dados carregados
+    if (offersData.length === 0) {
+        console.error("Tentativa de atualizar oferta sem dados.");
+        return;
+    }
+    
+    // Sorteia um produto
+    const ad = offersData[Math.floor(Math.random() * offersData.length)];
+    
+    // Seleciona os elementos do DOM
+    const loading = document.getElementById('loading-ads');
+    const link = document.getElementById('content-link');
+    const img = document.getElementById('content-image');
+    const title = document.getElementById('content-title');
+    const priceDisplay = document.getElementById('offer-price');
+
+    // Se o link e a imagem existirem no HTML, vamos preencher
+    if (link && img) {
+        // 1. Injeta os dados
+        img.src = ad.img;
+        img.alt = ad.title;
+        title.innerText = ad.title;
+        link.href = ad.link;
         
-        const str = await response.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(str, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
-
-        offersData = Array.from(items).map(item => {
-            // SCANNER TOTAL: Pega absolutamente todas as tags dentro do <item>
-            const allTags = item.getElementsByTagName("*");
-            let img = "";
-            let price = "";
-
-            for (let tag of allTags) {
-                // Verifica o nome da etiqueta (ex: g:image_link ou image_link)
-                const name = tag.nodeName.toLowerCase();
-                
-                if (name.includes("image_link")) {
-                    img = tag.textContent;
-                }
-                if (name.includes("price")) {
-                    price = tag.textContent;
-                }
-            }
-
-            const title = item.querySelector("title")?.textContent || "Arte Cristã";
-            const link = item.querySelector("link")?.textContent || "#";
-
-            // Formatação do preço (49.90 BRL -> R$ 49,90)
-            if (price) {
-                const num = price.replace(/[a-zA-Z]/g, '').trim();
-                price = "R$ " + num.replace('.', ',');
-            }
-
-            return { title, link, img, price };
-        }).filter(ad => ad.img !== ""); // Só aceita se achou a imagem
-
-        console.log("Produtos identificados com sucesso:", offersData.length);
-
-        if (offersData.length > 0) {
-            updateOffer();
-        } else {
-            document.getElementById('loading-ads').style.display = 'none';
+        if (priceDisplay) {
+            priceDisplay.innerText = ad.price;
         }
-    } catch (err) {
-        console.error("Erro crítico:", err);
-        document.getElementById('loading-ads').style.display = 'none';
+
+        // 2. REVELAÇÃO IMEDIATA (O "Pulo do Gato")
+        // Esconde a mensagem de carregamento
+        if (loading) loading.style.display = 'none';
+        
+        // Remove a classe hidden e força o display flex
+        link.classList.remove('hidden');
+        link.style.display = 'flex'; 
+        
+        console.log("Oferta exibida na tela:", ad.title);
+    } else {
+        console.error("Elementos HTML da oferta não foram encontrados.");
     }
 }
-
 function updateOffer() {
     if (offersData.length === 0) return;
 
