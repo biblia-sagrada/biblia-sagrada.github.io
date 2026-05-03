@@ -4,7 +4,6 @@ let offersData = [];
 
 // --- 2. LOGICA DE OFERTAS (COLAB55) ---
 
-let offersData = [];
 let currentIndex = 0;
 let intervalId = null;
 
