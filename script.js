@@ -7,31 +7,30 @@ let offersData = [];
 async function fetchOffers() {
     try {
         console.log("Iniciando busca do XML...");
-        // O ?t= evita que o navegador use uma versão antiga em cache
-        const response = await fetch('./c55_palavraquefortifica.xml?t=' + Date.now());
+
+        const response = await fetch('/c55_palavraquefortifica.xml?t=' + Date.now());
         const str = await response.text();
-        
+
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(str, "text/xml");
-        
-        // AJUSTE: Buscamos todos os <item>, independentemente de onde estejam no XML
+
         const items = xmlDoc.getElementsByTagName("item");
 
+        if (!items.length) {
+            console.warn("Nenhum <item> encontrado no XML");
+            return;
+        }
+
         offersData = Array.from(items).map(item => {
-            // Transformamos o item em texto para usar Regex (mais seguro contra prefixos g:)
             const rawItem = new XMLSerializer().serializeToString(item);
-            
+
             const extract = (tag) => {
-                // Procura a tag ignorando prefixos (como g:) e pega o conteúdo
                 const regex = new RegExp(`<[^>]*${tag}[^>]*>([^]*?)<\/[^>]*${tag}>`, 'i');
                 const match = rawItem.match(regex);
-                if (match && match[1]) {
-                    return match[1]
-                        .replace(/<!\[CDATA\[/g, '')
-                        .replace(/\]\]>/g, '')
-                        .trim();
-                }
-                return "";
+                return match?.[1]
+                    ?.replace(/<!\[CDATA\[/g, '')
+                    ?.replace(/\]\]>/g, '')
+                    ?.trim() || "";
             };
 
             const title = extract("title") || "Arte Cristã";
@@ -40,26 +39,27 @@ async function fetchOffers() {
             let price = extract("price");
 
             if (price) {
-                // Limpa o preço (ex: "49.90 BRL" vira "R$ 49,90")
-                const num = price.replace(/[a-zA-Z]/g, '').trim();
+                const num = price.replace(/[^\d.]/g, '');
                 price = "R$ " + num.replace('.', ',');
             }
 
             return { title, link, img, price };
-        }).filter(ad => ad.img && ad.img.includes('http')); // Só aceita se tiver link de imagem
+        }).filter(ad => ad.img && ad.img.startsWith('http'));
 
-        console.log("Produtos identificados:", offersData.length);
+        console.log("Produtos identificados:", offersData);
 
         if (offersData.length > 0) {
             updateOffer();
         } else {
-            const loading = document.getElementById('loading-ads');
-            if (loading) loading.style.display = 'none';
+            console.warn("Nenhum produto válido encontrado");
         }
+
     } catch (err) {
         console.error("Erro ao processar XML:", err);
     }
 }
+
+document.addEventListener("DOMContentLoaded", fetchOffers);
 
 function updateOffer() {
     if (offersData.length === 0) return;
