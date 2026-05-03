@@ -230,30 +230,28 @@ function updateOffer() {
 }
 
 */
-// 1. Função para buscar os produtos no XML
 async function fetchOffers() {
     try {
         const response = await fetch('https://biblia-sagrada.github.io/c55_palavraquefortifica.xml');
         const str = await response.text();
         const data = new window.DOMParser().parseFromString(str, "text/xml");
+        
+        // O segredo para ler o XML da Colab55/Google:
+        const ns = "http://base.google.com/ns/1.0";
         const items = data.querySelectorAll("item");
 
         offersData = Array.from(items).map(item => {
-            // Função segura para buscar tags com ou sem "g:"
-            const getTag = (tag1, tag2) => {
-                const el = item.getElementsByTagName(tag1)[0] || item.getElementsByTagName(tag2)[0];
-                return el ? el.textContent : "";
-            };
+            const title = item.querySelector("title")?.textContent || "";
+            const link = item.querySelector("link")?.textContent || "#";
+            
+            // Busca as tags especiais com o Namespace correto
+            const img = item.getElementsByTagNameNS(ns, "image_link")[0]?.textContent || "";
+            let price = item.getElementsByTagNameNS(ns, "price")[0]?.textContent || "";
 
-            const title = item.querySelector("title") ? item.querySelector("title").textContent : "Arte Exclusiva";
-            const link = item.querySelector("link") ? item.querySelector("link").textContent : "#";
-            const img = getTag("g:image_link", "image_link");
-            let price = getTag("g:price", "price");
-
-            // Formata o preço (A Colab55 costuma enviar como "49.90 BRL")
+            // Formatação do preço (ex: 49.90 BRL -> R$ 49,90)
             if (price) {
-                price = price.replace('BRL', '').trim(); // Tira o BRL
-                price = "R$ " + price.replace('.', ','); // Troca ponto por vírgula e põe R$
+                price = price.replace('BRL', '').trim().replace('.', ',');
+                price = "R$ " + price;
             }
 
             return {
@@ -264,22 +262,15 @@ async function fetchOffers() {
             };
         });
 
-        // Só chama a atualização se tiver achado produtos
         if (offersData.length > 0) {
             updateOffer();
-        } else {
-            throw new Error("Nenhum produto encontrado no XML.");
         }
-        
     } catch (error) {
-        console.error("Erro no XML:", error);
-        // Se falhar, esconde a mensagem "Deus abençoe..." para não ficar travado na tela
-        const loading = document.getElementById('loading-ads');
-        if (loading) loading.style.display = 'none';
+        console.error("Erro ao ler XML:", error);
+        document.getElementById('loading-ads').style.display = 'none';
     }
 }
 
-// 2. Função para montar a oferta na tela
 function updateOffer() {
     if (offersData.length === 0) return;
     
@@ -290,26 +281,16 @@ function updateOffer() {
     const img = document.getElementById('content-image');
     const title = document.getElementById('content-title');
     const priceDisplay = document.getElementById('offer-price');
-    const desc = document.getElementById('offer-description');
     
-    if (ad['img'] && ad['img'].length > 10) {
-        img.src = ad['img'];
-        title.innerText = ad['Item_Name'];
-        link.href = ad['Offer_Link'];
-        
-        // Coloca o preço na tela
-        if (priceDisplay) {
-            priceDisplay.innerText = ad['Price'];
-        }
-        
-        // Remove a descrição caso esteja vazia para não dar espaço extra
-        if (desc) desc.style.display = 'none'; 
+    if (ad.img) {
+        img.src = ad.img;
+        title.innerText = ad.Item_Name;
+        link.href = ad.Offer_Link;
+        if (priceDisplay) priceDisplay.innerText = ad.Price;
 
-        // Quando a imagem baixar do servidor, exibe tudo
         img.onload = () => {
             if (loading) loading.style.display = 'none';
             link.classList.remove('hidden');
-            img.style.display = 'block';
         };
     }
 }
